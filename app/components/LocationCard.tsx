@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { LucideIcon } from "lucide-react";
 import { getCurrentTimeInTimezone } from "../lib/utils";
-
+import { WeatherIcon } from "../lib/types";
+import { getWeatherBackground } from "../lib/weatherBackgrounds";
+import { TemperatureValue } from "./TemperatureValue";
 
 interface LocationCardProps {
   slug: string;
@@ -9,7 +10,9 @@ interface LocationCardProps {
   description: string;
   temperature: number;
   timezone: string;
-  Icon: LucideIcon;
+  Icon: WeatherIcon;
+  isNight?: boolean;
+  weatherCode: number;
 }
 
 export function LocationCard({
@@ -19,22 +22,30 @@ export function LocationCard({
   temperature,
   timezone,
   Icon,
+  isNight,
+  weatherCode,
 }: LocationCardProps) {
+  const background = getWeatherBackground(weatherCode, isNight ?? false);
+
   return (
     <Link
       href={`/${slug}`}
-      className="block py-6 px-7 border border-white rounded-2xl bg-background/80 hover:bg-muted"
+      className={`group block h-full rounded-2xl bg-linear-to-b px-5 py-6 shadow-lg shadow-black/30 inset-shadow-xs inset-shadow-white/20 transition-opacity duration-200 hover:opacity-90 sm:px-6 xl:px-7 ${background}`}
     >
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-base font-semibold">{name}</h2>
-          <p className="text-sm text-muted-foreground">
+          <h2 className="text-base font-semibold text-foreground text-shadow-md">{name}</h2>
+          <p className="text-sm text-muted-foreground text-shadow-sm">
             {getCurrentTimeInTimezone(timezone)} - {description}
           </p>
         </div>
         <div className="flex gap-6 items-center">
-          <span className="text-4xl font-light">{temperature}°</span>
-          <Icon className="size-9 text-muted-foreground/70 stroke-[1.5]" />
+          <span className="text-4xl font-light text-foreground text-shadow-md">
+            <TemperatureValue celsius={temperature} />
+          </span>
+          <Icon 
+          className="size-12 [--animation-duration:0] group-hover:[--animation-duration:4s]" 
+          isNight={isNight} />
         </div>
       </div>
     </Link>

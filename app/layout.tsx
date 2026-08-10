@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
+import { Effects } from "./components/icons/Effects";
+import { TemperatureToggle } from "./components/TemperatureToggle";
+import { TemperatureScaleProvider } from "./context/TemperatureScaleContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,19 +31,26 @@ export default function RootLayout({
       lang="en"
     >
       <body 
-        className={`${geistSans.variable} antialiased bg-muted text-foreground`}
+        className={`${geistSans.variable} antialiased bg-muted bg-linear-to-b from-slate-900 to-slate-950 text-foreground`}
         style={{
-          background: "linear-gradient(120deg, oklch(90% 0.10 260) 0%, oklch(95% 0.08 120) 100%)",
         }}
       >
-        <div className="min-h-screen py-8 px-6">
-          <main className="max-w-xl mx-auto">
-              <h1 className="text-2xl font-semibold mb-6 text-foreground hover:text-foreground">
-                <Link href="/">Weather in Vietnam</Link>
-              </h1>
+        <TemperatureScaleProvider>
+          <Effects />
+          <header className="fixed top-0 left-0 w-full z-10 bg-">
+            <div className="max-w-xl mx-auto py-12 px-6">
+              <div className="flex items-center justify-between gap-4">
+                <h1 className="text-base font-semibold text-muted-foreground hover:text-foreground text-shadow-sm">
+                  <Link href="/">Weather here and there</Link>
+                </h1>
+                <TemperatureToggle />
+              </div>
+            </div>
+          </header>
+          <main className="min-h-screen">
             {children}
           </main>
-        </div>
+        </TemperatureScaleProvider>
       </body>
     </html>
   );
