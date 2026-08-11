@@ -22,7 +22,7 @@ export function DaysListItem({
         <span className="text-foreground text-shadow-sm">
           <TemperatureValue celsius={maxTemp} />
         </span>
-        <span className="text-muted-foreground text-shadow-sm">
+        <span className="text-foreground/80 text-shadow-sm">
           <TemperatureValue celsius={minTemp} />
         </span>
       </div>

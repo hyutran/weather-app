@@ -40,13 +40,13 @@ export default async function LocationPage({ params }: PageProps) {
   return (
    <div className={`min-h-screen bg-linear-to-b ${background}`}>
     <div className="max-w-xl mx-auto py-24 px-6">
-        <div className="flex flex-col gap-16 py-8
+        <div className="flex flex-col gap-16 py-8 animate-fade-in
             ">
           <header className="flex flex-col gap-8">
             
             <section className="flex flex-col">
               <h2 className="text-xl font-semibold text-shadow-md">{location.name}</h2>
-              <p className="text-base text-muted-foreground text-shadow-sm">
+              <p className="text-base text-foreground/80 text-shadow-sm">
                 {formatDate(todayForecast.date)}{" "}
                 {getCurrentTimeInTimezone(weather.current.timezone)}
               </p>
@@ -57,7 +57,7 @@ export default async function LocationPage({ params }: PageProps) {
                 <span className="text-6xl font-light text-shadow-md">
                   <TemperatureValue celsius={weather.current.temperature} />
                 </span>
-                <p className="text-base text-muted-foreground text-shadow-sm">{description}</p>
+                <p className="text-base text-foreground/80 text-shadow-sm">{description}</p>
               </div>
               <Icon isNight={isNight} className="size-28" />
             </section>
@@ -69,7 +69,7 @@ export default async function LocationPage({ params }: PageProps) {
               {weather.daily.map((day, index) => {
                 const DayIcon = getWeatherIcon(day.weatherCode);
                 return (
-                  <DaysListItem
+                  <DaysListItem 
                     key={day.date}
                     day={getDayName(day.date, index)}
                     maxTemp={day.maxTemp}

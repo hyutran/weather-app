@@ -29,9 +29,12 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      className={`dark ${geistSans.variable}`}
     >
-      <body 
-        className={`${geistSans.variable} antialiased bg-muted bg-linear-to-b from-slate-900 to-slate-950 text-foreground`}
+      <body
+        // className="antialiased bg-white text-foreground"
+        className="antialiased bg-linear-to-b from-sky-950 to-slate-900 text-foreground"
+
         style={{
         }}
       >
@@ -40,7 +43,7 @@ export default function RootLayout({
           <header className="fixed top-0 left-0 w-full z-10 bg-">
             <div className="max-w-xl mx-auto py-12 px-6">
               <div className="flex items-center justify-between gap-4">
-                <h1 className="text-base font-semibold text-muted-foreground hover:text-foreground text-shadow-sm">
+                <h1 className="text-base font-semibold text-foreground/80 hover:text-foreground text-shadow-sm">
                   <Link href="/">Weather here and there</Link>
                 </h1>
                 <TemperatureToggle />
