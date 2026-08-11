@@ -61,7 +61,7 @@
 
   --animate-hover: hover var(--animation-duration) var(--animation-delay) ease-in-out infinite;
 
-  --animate-fade-in: fade-in 0.7s ease-in-out var(--animation-delay) ;
+  --animate-fade-in: fade-in 1s ease-out var(--animation-delay) ;
 
   @keyframes fade-in {
     from {
