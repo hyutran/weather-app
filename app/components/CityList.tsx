@@ -125,8 +125,8 @@ export function CityList() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-32">
-      <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="mx-auto max-w-6xl px-6 py-32">
+      <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
         {!hasLoaded &&
           userCities.map((city) => (
             <li key={city.slug} className="h-full">

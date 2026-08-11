@@ -36,10 +36,10 @@ export function LocationCard({
         href={`/${slug}`}
         className={`block h-full rounded-2xl px-5 py-6 shadow-md/80 shadow-black/30 inset-shadow-xs inset-shadow-white/20 transition-opacity duration-200 hover:opacity-90 sm:px-6 xl:px-7 ${background}`}
       >
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center gap-1">
           <div>
             <h2 className="text-base font-semibold text-foreground text-shadow-md">{name}</h2>
-            <p className="text-sm text-foreground/80 text-shadow-sm">
+            <p className="text-sm text-foreground/70 text-shadow-sm">
               {getCurrentTimeInTimezone(timezone)} - {description}
             </p>
           </div>
