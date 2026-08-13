@@ -34,6 +34,7 @@ export function LocationCard({
     <div className="group/card relative h-full ">
       <Link
         href={`/${slug}`}
+        draggable={false}
         className={`weather-background--card block h-full rounded-4xl px-6 py-8 sm:px-7 xl:px-8 ${background.className}`}
         style={background.style}
       >

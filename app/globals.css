@@ -233,6 +233,38 @@
   font-family: var(--font-minecart);
 }
 
+.location-card-sortable {
+  cursor: grab;
+  outline: none;
+  transform-origin: center;
+  transition:
+    opacity 180ms ease,
+    scale 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 240ms ease;
+}
+
+.location-card-sortable:active {
+  cursor: grabbing;
+}
+
+.location-card-sortable:focus-visible {
+  border-radius: var(--radius-4xl);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--foreground) 45%, transparent);
+}
+
+.location-card-sortable[data-dragging="true"] {
+  z-index: 10;
+  opacity: 0.64;
+  scale: 0.985;
+  filter: saturate(0.9) brightness(1.06);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .location-card-sortable {
+    transition: opacity 100ms linear;
+  }
+}
+
 .weather-background {
   position: relative;
   isolation: isolate;

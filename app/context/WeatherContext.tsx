@@ -37,6 +37,7 @@ interface WeatherContextValue {
   hardRefreshPendingSlugs: Set<string>;
   addCity: (city: City) => Promise<void>;
   removeCity: (slug: string) => void;
+  moveCity: (slug: string, targetSlug: string) => void;
   refreshAll: () => Promise<void>;
 }
 
@@ -237,6 +238,27 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
     setUserCities((current) => current.filter((city) => city.slug !== slug));
   }, []);
 
+  const moveCity = useCallback((slug: string, targetSlug: string) => {
+    if (slug === targetSlug) {
+      return;
+    }
+
+    setUserCities((current) => {
+      const fromIndex = current.findIndex((city) => city.slug === slug);
+      const targetIndex = current.findIndex((city) => city.slug === targetSlug);
+
+      if (fromIndex === -1 || targetIndex === -1) {
+        return current;
+      }
+
+      const next = [...current];
+      const [movedCity] = next.splice(fromIndex, 1);
+      next.splice(targetIndex, 0, movedCity);
+
+      return next;
+    });
+  }, []);
+
   const refreshAll = useCallback(async () => {
     await loadWeather(userCities, true);
   }, [loadWeather, userCities]);
@@ -250,6 +272,7 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
       hardRefreshPendingSlugs,
       addCity,
       removeCity,
+      moveCity,
       refreshAll,
     }),
     [
@@ -259,6 +282,7 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
       refreshAll,
       refreshingSlugs,
       removeCity,
+      moveCity,
       userCities,
       weatherBySlug,
     ]
