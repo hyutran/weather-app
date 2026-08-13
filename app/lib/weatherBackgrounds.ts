@@ -11,12 +11,12 @@ function getWeatherPalette(code: number, isNight: boolean): WeatherPalette {
   if ([0, 1, 2].includes(code)) {
     return isNight
       ? {
-          base: "oklch(2% 0.07 260)",
-          glow: "oklch(20% 0.15 250)",
+          base: "oklch(2% 0.12 260)",
+          glow: "oklch(35% 0.15 260)",
           glowBright: "oklch(48% 0.3 250)",
         }
       : {
-          base: "oklch(9% 0.15 250)",
+          base: "oklch(5% 0.15 250)",
           glow: "oklch(65% 0.3 250)",
           glowBright: "oklch(78% 0.28 250)",
         };

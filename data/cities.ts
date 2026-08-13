@@ -36,6 +36,8 @@ export const cities: City[] = [
   { name: "Bangkok", slug: "bangkok", lat: 13.7563, lon: 100.5018 },
   { name: "Singapore", slug: "singapore", lat: 1.3521, lon: 103.8198 },
   { name: "Jakarta", slug: "jakarta", lat: -6.2088, lon: 106.8456 },
+  { name: "Hanoi", slug: "hanoi", lat: 21.0285, lon: 105.8542 },
+  { name: "Ho Chi Minh City", slug: "ho-chi-minh-city", lat: 10.8231, lon: 106.6297 },
   { name: "Beijing", slug: "beijing", lat: 39.9042, lon: 116.4074 },
   { name: "Shanghai", slug: "shanghai", lat: 31.2304, lon: 121.4737 },
   { name: "Hong Kong", slug: "hong-kong", lat: 22.3193, lon: 114.1694 },
