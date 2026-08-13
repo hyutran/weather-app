@@ -21,7 +21,7 @@ export function TemperatureToggle() {
     >
       <SelectTrigger
         aria-label="Temperature unit"
-        className="h-9 min-h-10 min-w-10 rounded-full border-white/15 bg-white/10 px-3 text-xs font-semibold text-white shadow-sm inset-shadow-xs inset-shadow-white/20 backdrop-blur-sm hover:bg-white/15 focus-visible:border-white/30 focus-visible:ring-white/20 dark:bg-card/50 dark:hover:bg-white/15 [&_svg]:text-white/50"
+        className="h-9 min-h-10 min-w-10 rounded-full border-white/15 bg-white/10 px-4 text-xs font-semibold text-white shadow-sm inset-shadow-xs inset-shadow-white/20 backdrop-blur-sm hover:bg-white/15 focus-visible:border-white/30 focus-visible:ring-white/20 dark:bg-card/40 dark:hover:bg-white/15 [&_svg]:text-white/50"
       >
         <SelectValue>
           {(value) => (value === "fahrenheit" ? "°F" : "°C")}
