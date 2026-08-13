@@ -7,7 +7,7 @@ const STORAGE_KEY = "temperature-scale";
 
 interface TemperatureScaleContextValue {
   scale: TemperatureScale;
-  toggleScale: () => void;
+  setScale: (scale: TemperatureScale) => void;
 }
 
 const TemperatureScaleContext =
@@ -35,14 +35,8 @@ export function TemperatureScaleProvider({
     window.localStorage.setItem(STORAGE_KEY, scale);
   }, [scale]);
 
-  function toggleScale() {
-    setScale((currentScale) =>
-      currentScale === "celsius" ? "fahrenheit" : "celsius",
-    );
-  }
-
   return (
-    <TemperatureScaleContext.Provider value={{ scale, toggleScale }}>
+    <TemperatureScaleContext.Provider value={{ scale, setScale }}>
       {children}
     </TemperatureScaleContext.Provider>
   );

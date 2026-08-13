@@ -1,41 +1,51 @@
 "use client";
 
-import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useTemperatureScale } from "../context/TemperatureScaleContext";
 
 export function TemperatureToggle() {
-  const { scale, toggleScale } = useTemperatureScale();
-  const isFahrenheit = scale === "fahrenheit";
+  const { scale, setScale } = useTemperatureScale();
 
   return (
-    <div className="relative shrink-0">
-      <Switch
-        checked={isFahrenheit}
-        onCheckedChange={toggleScale}
-        aria-label={`Temperature unit: degrees ${isFahrenheit ? "Fahrenheit" : "Celsius"}`}
-        className="data-[size=default]:h-9 data-[size=default]:w-19 border-white/15 bg-white/10 inset-shadow-xs inset-shadow-white/20 backdrop-blur-sm data-checked:bg-white/10 data-unchecked:bg-white/10 hover:bg-white/15 [&_[data-slot=switch-thumb]]:opacity-0"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-1 grid grid-cols-2"
+    <Select
+      value={scale}
+      onValueChange={(value) => {
+        if (value) setScale(value);
+      }}
+    >
+      <SelectTrigger
+        aria-label="Temperature unit"
+        className="h-9 min-h-10 min-w-10 rounded-full border-white/15 bg-white/10 px-3 text-xs font-semibold text-white shadow-sm inset-shadow-xs inset-shadow-white/20 backdrop-blur-sm hover:bg-white/15 focus-visible:border-white/30 focus-visible:ring-white/20 dark:bg-card/50 dark:hover:bg-white/15 [&_svg]:text-white/50"
       >
-        <span
-          className={`absolute inset-y-0 left-0 w-[34px] rounded-full bg-white/20 shadow-sm transition-transform duration-300 ${isFahrenheit ? "translate-x-[34px]" : "translate-x-0"
-            }`}
-        />
-        <span
-          className={`relative z-10 flex items-center justify-center text-xs font-semibold transition-colors duration-300 ${isFahrenheit ? "text-white/50" : "text-white text-shadow-sm"
-            }`}
+        <SelectValue>
+          {(value) => (value === "fahrenheit" ? "°F" : "°C")}
+        </SelectValue>
+      </SelectTrigger>
+      <SelectContent
+        align="end"
+        alignItemWithTrigger={false}
+        sideOffset={8}
+        className="min-w-36 rounded-2xl border border-white/15 bg-background/80 p-1.5 text-white shadow-xl shadow-black/30 inset-shadow-xs inset-shadow-white/10 backdrop-blur-xl ring-0"
+      >
+        <SelectItem
+          value="celsius"
+          className="rounded-xl px-2.5 py-2 text-xs font-medium text-white/70 data-highlighted:bg-white/10 data-highlighted:text-white data-selected:bg-white/15 data-selected:text-white"
         >
-          °C
-        </span>
-        <span
-          className={`relative z-10 flex items-center justify-center text-xs font-semibold transition-colors duration-300 ${isFahrenheit ? "text-white text-shadow-sm" : "text-white/50"
-            }`}
+          Celsius (°C)
+        </SelectItem>
+        <SelectItem
+          value="fahrenheit"
+          className="rounded-xl px-2.5 py-2 text-xs font-medium text-white/70 data-highlighted:bg-white/10 data-highlighted:text-white data-selected:bg-white/15 data-selected:text-white"
         >
-          °F
-        </span>
-      </div>
-    </div>
+          Fahrenheit (°F)
+        </SelectItem>
+      </SelectContent>
+    </Select>
   );
 }

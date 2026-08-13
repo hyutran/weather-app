@@ -248,26 +248,27 @@
   content: "";
   pointer-events: none;
 }
-
 /* Location card gradient and glows */
 .weather-background--card {
   /* border-bottom: var(--weather-card-border-size) solid transparent; */
   background-image:
-    radial-gradient(
-      ellipse at top,
+    radial-gradient(ellipse at top,
       color-mix(in oklch, var(--weather-glow) 85%, transparent),
-      transparent 68%
-    );
+      transparent 68%);
   background-clip: padding-box, border-box;
   background-origin: padding-box, border-box;
   box-shadow:
     0 1px 3px 0 var(--weather-card-shadow),
     0 1px 2px -1px var(--weather-card-shadow),
-    
-    /* Top-right border */
-    inset -1px 2px 2px var(--weather-card-inset-highlight);
-}
 
+    /* Top-right border */
+    inset -1px 2px 2px var(--weather-card-inset-highlight),
+
+    /* Bottom border */
+    inset 0px -1px 4px color-mix(in oklch,
+      var(--weather-card-inset-highlight) 30%,
+      transparent);
+}
 .weather-background--card::before {
   box-shadow:
     /* Bottom-right glow */
