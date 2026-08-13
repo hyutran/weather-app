@@ -41,7 +41,7 @@ function getWeatherPalette(code: number, isNight: boolean): WeatherPalette {
   return isNight
     ? {
         base: "oklch(2% 0.07 260)",
-        glow: "oklch(35% 0.045 266)",
+        glow: "oklch(45% 0.045 266)",
         glowBright: "oklch(52% 0.055 266)",
       }
     : {

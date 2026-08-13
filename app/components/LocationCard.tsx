@@ -55,16 +55,16 @@ export function LocationCard({
           </div>
         </div>
       </Link>
-      {/* {onRemove && (
+      {onRemove && (
         <button
           type="button"
           onClick={onRemove}
           aria-label={`Remove ${name}`}
-          className="absolute top-2 right-2 flex size-6 items-center justify-center rounded-full bg-black/30 text-white opacity-0 shadow-sm backdrop-blur-sm transition-opacity duration-200 hover:bg-black/50 group-hover/card:opacity-100 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-white/60"
+          className="absolute top-3 right-3 flex size-6 items-center justify-center rounded-full bg-black/30 text-white opacity-0 shadow-sm backdrop-blur-sm transition-opacity duration-200 hover:bg-black/50 group-hover/card:opacity-100 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-white/60"
         >
           <XIcon className="size-3.5" />
         </button>
-      )} */}
+      )}
     </div>
   );
 }
