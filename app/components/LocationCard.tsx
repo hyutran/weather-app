@@ -31,10 +31,11 @@ export function LocationCard({
   const background = getWeatherBackground(weatherCode, isNight ?? false);
 
   return (
-    <div className="group/card relative h-full">
+    <div className="group/card relative h-full ">
       <Link
         href={`/${slug}`}
-        className={`block h-full rounded-2xl px-5 py-6 shadow-md/80 shadow-black/30 inset-shadow-xs inset-shadow-white/20 transition-opacity duration-200 hover:opacity-90 sm:px-6 xl:px-7 ${background}`}
+        className={`weather-background--card block h-full rounded-4xl px-6 py-8 sm:px-7 xl:px-8 ${background.className}`}
+        style={background.style}
       >
         <div className="flex justify-between items-center gap-1">
           <div>
@@ -44,7 +45,7 @@ export function LocationCard({
             </p>
           </div>
           <div className="flex gap-6 items-center">
-            <span className="text-4xl font-light text-foreground text-shadow-md">
+            <span className="font-minecart text-4xl font-light text-foreground text-shadow-md">
               <TemperatureValue celsius={temperature} />
             </span>
             <Icon
@@ -54,7 +55,7 @@ export function LocationCard({
           </div>
         </div>
       </Link>
-      {onRemove && (
+      {/* {onRemove && (
         <button
           type="button"
           onClick={onRemove}
@@ -63,7 +64,7 @@ export function LocationCard({
         >
           <XIcon className="size-3.5" />
         </button>
-      )}
+      )} */}
     </div>
   );
 }

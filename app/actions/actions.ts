@@ -1,34 +1,43 @@
 "use server";
 
-import { WeatherData } from "../lib/types";     
+import { updateTag } from "next/cache";
+import { WeatherData } from "../lib/types";
 
 export async function getWeather(
-    lat: number,
-    lon: number
+  lat: number,
+  lon: number,
+  forceRefresh = false
 ): Promise<WeatherData> {
   const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code,sunrise,sunset&timezone=auto&forecast_days=7`;
+  const weatherTag = `weather:${lat}:${lon}`;
 
-  const resonse = await fetch(url);
+  if (forceRefresh) {
+    updateTag(weatherTag);
+  }
 
-    if (!resonse.ok) {
-        throw new Error(`Weather API error: ${resonse.status}`);
-    }
+  const response = await fetch(url, {
+    next: { revalidate: 5 * 60, tags: [weatherTag] },
+  });
 
-    const data = await resonse.json();
+  if (!response.ok) {
+    throw new Error(`Weather API error: ${response.status}`);
+  }
 
-    return {
-        current: {
-            temperature: Math.round(data.current.temperature_2m),
-            weatherCode: data.current.weather_code,
-            timezone: data.timezone,
-            sunrise: data.daily.sunrise[0],
-            sunset: data.daily.sunset[0],
-        },
-        daily: data.daily.time.map((date: string, index: number) => ({
-            date,
-            maxTemp: Math.round(data.daily.temperature_2m_max[index]),
-            minTemp: Math.round(data.daily.temperature_2m_min[index]),
-            weatherCode: data.daily.weather_code[index],
-        })),
-    }
+  const data = await response.json();
+
+  return {
+    current: {
+      temperature: Math.round(data.current.temperature_2m),
+      weatherCode: data.current.weather_code,
+      timezone: data.timezone,
+      sunrise: data.daily.sunrise[0],
+      sunset: data.daily.sunset[0],
+    },
+    daily: data.daily.time.map((date: string, index: number) => ({
+      date,
+      maxTemp: Math.round(data.daily.temperature_2m_max[index]),
+      minTemp: Math.round(data.daily.temperature_2m_min[index]),
+      weatherCode: data.daily.weather_code[index],
+    })),
+  };
 }

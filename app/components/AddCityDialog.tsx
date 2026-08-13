@@ -57,7 +57,7 @@ export function AddCityDialog({ existingSlugs, onAdd }: AddCityDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger className="flex h-full min-h-24 w-full items-center justify-center gap-3 rounded-2xl px-5 py-6 text-foreground/70 shadow-lg shadow-black/10 outline outline-dashed -outline-offset-1 bg-white/10 outline-white/20 transition-colors hover:outline-white/40 hover:text-foreground sm:px-6 xl:px-7">
+      <DialogTrigger className="flex h-full min-h-26 w-full items-center justify-center gap-3 rounded-4xl px-5 py-6 text-foreground/80 shadow-lg shadow-black/10 outline outline-dashed -outline-offset-1 bg-white/05 outline-white/20 transition-colors hover:outline-white/40 hover:text-foreground sm:px-6 xl:px-7">
         <PlusIcon className="size-4" />
         <span className="text-sm font-medium">Add city</span>
       </DialogTrigger>

@@ -38,15 +38,18 @@ export default async function LocationPage({ params }: PageProps) {
   const background = getWeatherBackground(weather.current.weatherCode, isNight);
 
   return (
-   <div className={`min-h-screen bg-linear-to-b ${background}`}>
-    <div className="max-w-xl mx-auto py-24 px-6">
+    <div
+      className={`min-h-screen weather-background--detail ${background.className}`}
+      style={background.style}
+    >
+      <div className="max-w-xl mx-auto py-24 px-6">
         <div className="flex flex-col gap-16 py-8 animate-fade-in
             ">
           <header className="flex flex-col gap-8">
             
             <section className="flex flex-col">
               <h2 className="text-xl font-semibold text-shadow-md">{location.name}</h2>
-              <p className="text-base text-foreground/80 text-shadow-sm">
+              <p className="text-base text-muted-foreground text-shadow-sm">
                 {formatDate(todayForecast.date)}{" "}
                 {getCurrentTimeInTimezone(weather.current.timezone)}
               </p>
@@ -54,7 +57,7 @@ export default async function LocationPage({ params }: PageProps) {
 
             <section className="flex justify-between items-center">
               <div className="flex flex-col gap-2">
-                <span className="text-6xl font-light text-shadow-md">
+                <span className="font-minecart text-6xl font-light text-shadow-md">
                   <TemperatureValue celsius={weather.current.temperature} />
                 </span>
                 <p className="text-base text-foreground/80 text-shadow-sm">{description}</p>

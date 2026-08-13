@@ -1,29 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getWeather } from "../actions/actions";
 import { getWeatherIcon } from "../lib/weatherIcon";
 import { getWeatherDescription } from "../lib/weatherDescription";
 import { isNightTime } from "../lib/utils";
-import { WeatherData } from "../lib/types";
 import { LocationCard } from "./LocationCard";
 import { AddCityDialog } from "./AddCityDialog";
-import { cities, type City } from "@/data/cities";
-
-const STORAGE_KEY = "user-cities";
-const DEFAULT_CITY_SLUGS = ["new-york", "london", "tokyo"];
-const DEFAULT_CITIES = cities.filter((city) =>
-  DEFAULT_CITY_SLUGS.includes(city.slug)
-);
-
-interface CityWeather {
-  city: City;
-  weather: WeatherData;
-}
+import { useWeather } from "../context/WeatherContext";
 
 function LocationCardSkeleton({ name }: { name: string }) {
   return (
-    <div className="h-full rounded-2xl bg-white/10 px-5 py-6 shadow-md/80 shadow-black/30 inset-shadow-xs inset-shadow-white/20 sm:px-6 xl:px-7">
+    <div className="h-full min-h-28 rounded-4xl bg-white/10 px-5 py-6 shadow-md/80 shadow-black/30 inset-shadow-xs inset-shadow-white/20 sm:px-6 xl:px-7 ">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-base font-semibold text-foreground text-shadow-md">
@@ -40,131 +26,76 @@ function LocationCardSkeleton({ name }: { name: string }) {
   );
 }
 
-function readStoredCities(): City[] {
-  if (typeof window === "undefined") {
-    return DEFAULT_CITIES;
-  }
-
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    const slugs: unknown = raw ? JSON.parse(raw) : null;
-
-    if (!Array.isArray(slugs) || slugs.length === 0) {
-      return DEFAULT_CITIES;
-    }
-
-    const resolved = slugs
-      .map((slug) => cities.find((city) => city.slug === slug))
-      .filter((city): city is City => Boolean(city));
-
-    return resolved.length > 0 ? resolved : DEFAULT_CITIES;
-  } catch {
-    return DEFAULT_CITIES;
-  }
-}
-
 export function CityList() {
-  const [userCities, setUserCities] = useState<City[]>([]);
-  const [weatherEntries, setWeatherEntries] = useState<CityWeather[]>([]);
-  const [hasLoaded, setHasLoaded] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadSavedCities() {
-      const storedCities = readStoredCities();
-      setUserCities(storedCities);
-
-      const entries = await Promise.all(
-        storedCities.map(async (city) => ({
-          city,
-          weather: await getWeather(city.lat, city.lon),
-        }))
-      );
-
-      if (!cancelled) {
-        setWeatherEntries(entries);
-        setHasLoaded(true);
-      }
-    }
-
-    loadSavedCities();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!hasLoaded) {
-      return;
-    }
-
-    window.localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(userCities.map((city) => city.slug))
-    );
-  }, [userCities, hasLoaded]);
-
-  async function handleAdd(city: City) {
-    if (userCities.some((existing) => existing.slug === city.slug)) {
-      return;
-    }
-
-    const weather = await getWeather(city.lat, city.lon);
-
-    setUserCities((current) => [...current, city]);
-    setWeatherEntries((current) => [...current, { city, weather }]);
-  }
-
-  function handleRemove(slug: string) {
-    setUserCities((current) => current.filter((city) => city.slug !== slug));
-    setWeatherEntries((current) =>
-      current.filter((entry) => entry.city.slug !== slug)
-    );
-  }
+  const {
+    userCities,
+    weatherBySlug,
+    hardRefreshPendingSlugs,
+    addCity,
+    removeCity,
+  } = useWeather();
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-32">
-      <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
-        {!hasLoaded &&
-          userCities.map((city) => (
-            <li key={city.slug} className="h-full">
-              <LocationCardSkeleton name={city.name} />
-            </li>
-          ))}
-        {hasLoaded &&
-          weatherEntries.map(({ city, weather }) => {
-            const Icon = getWeatherIcon(weather.current.weatherCode);
-            const description = getWeatherDescription(
-              weather.current.weatherCode
-            );
-            const isNight = isNightTime(
-              weather.current.timezone,
-              weather.current.sunrise,
-              weather.current.sunset
-            );
+    <div className="mx-auto max-w-xl px-6 py-32">
+      <div className="mb-3 flex justify-end">
+        {/* <button
+          type="button"
+          onClick={() => void refreshAll()}
+          disabled={!hasHydrated || isRefreshing}
+          className="flex items-center gap-2 rounded-lg px-2.5 py-2 text-sm font-medium text-foreground/70 transition-colors hover:bg-white/10 hover:text-foreground disabled:pointer-events-none disabled:opacity-50"
+        >
+          <RefreshCwIcon
+            className={`size-4 ${isRefreshing ? "animate-spin" : ""}`}
+          />
+          Refresh weather
+        </button> */}
+      </div>
+      <ul className="flex flex-col gap-3">
+        {userCities.map((city) => {
+          const entry = weatherBySlug[city.slug];
+          const isHardRefreshPending = hardRefreshPendingSlugs.has(
+            city.slug
+          );
 
+          if (!entry || isHardRefreshPending) {
             return (
-              <li key={city.slug} className="h-full animate-fade-in">
-                <LocationCard
-                  slug={city.slug}
-                  name={city.name}
-                  description={description}
-                  temperature={weather.current.temperature}
-                  timezone={weather.current.timezone}
-                  Icon={Icon}
-                  isNight={isNight}
-                  weatherCode={weather.current.weatherCode}
-                  onRemove={() => handleRemove(city.slug)}
-                />
+              <li key={city.slug} className="h-full">
+                <LocationCardSkeleton name={city.name} />
               </li>
             );
-          })}
+          }
+
+          const { weather } = entry;
+          const Icon = getWeatherIcon(weather.current.weatherCode);
+          const description = getWeatherDescription(
+            weather.current.weatherCode
+          );
+          const isNight = isNightTime(
+            weather.current.timezone,
+            weather.current.sunrise,
+            weather.current.sunset
+          );
+
+          return (
+            <li key={city.slug} className="h-full animate-fade-in">
+              <LocationCard
+                slug={city.slug}
+                name={city.name}
+                description={description}
+                temperature={weather.current.temperature}
+                timezone={weather.current.timezone}
+                Icon={Icon}
+                isNight={isNight}
+                weatherCode={weather.current.weatherCode}
+                onRemove={() => removeCity(city.slug)}
+              />
+            </li>
+          );
+        })}
         <li className="h-full">
           <AddCityDialog
             existingSlugs={userCities.map((city) => city.slug)}
-            onAdd={handleAdd}
+            onAdd={(city) => void addCity(city)}
           />
         </li>
       </ul>
