@@ -1,13 +1,13 @@
 import { WeatherIconProps } from "../../../lib/types";
 import { Cloud, Snowflake } from "../primitives";
-import { WeatherIcon } from "../WeatherIcon";
+import { WeatherIconFrame } from "../WeatherIconFrame";
 
 export function Snow({ className }: WeatherIconProps) {
     return (
-        <WeatherIcon className={className}>
+        <WeatherIconFrame className={className}>
             <Cloud y={-20} />
             <Snowflake x={-50} y={-15} scale={0.7} />
             <Snowflake x={50} y={10} scale={0.85} />
-        </WeatherIcon>
+        </WeatherIconFrame>
     );
 }

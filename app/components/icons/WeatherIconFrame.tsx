@@ -1,10 +1,10 @@
 import {ReactNode, SVGProps} from "react";
 
-interface WeatherIconWrapperProps extends SVGProps<SVGSVGElement> {
+interface WeatherIconFrameProps extends SVGProps<SVGSVGElement> {
     children?: ReactNode;
     }
 
-export function WeatherIcon({ children, ...props }: WeatherIconWrapperProps) {
+export function WeatherIconFrame({ children, ...props }: WeatherIconFrameProps) {
     return (
         <svg
             width={384}

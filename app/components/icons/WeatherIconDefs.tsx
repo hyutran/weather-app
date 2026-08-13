@@ -1,4 +1,4 @@
-export function Effects() {
+export function WeatherIconDefs() {
   return (
     <svg width="0" height="0" className="absolute">
       <defs>

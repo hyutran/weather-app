@@ -1,11 +1,11 @@
 import { WeatherIconProps } from "../../../lib/types";
 import { Sun, Moon } from "../primitives";
-import { WeatherIcon } from "../WeatherIcon";
+import { WeatherIconFrame } from "../WeatherIconFrame";
 
 export function ClearSky({ className, isNight }: WeatherIconProps) {
     return (
-        <WeatherIcon className={className}>
+        <WeatherIconFrame className={className}>
             {isNight ? <Moon /> : <Sun />}
-        </WeatherIcon>
+        </WeatherIconFrame>
     );
 }

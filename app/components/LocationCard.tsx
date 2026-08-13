@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { XIcon } from "lucide-react";
-import { getCurrentTimeInTimezone } from "../lib/utils";
+import { getCurrentTimeInTimezone } from "../lib/dateTime";
 import { WeatherIcon } from "../lib/types";
 import { getWeatherBackground } from "../lib/weatherBackgrounds";
 import { TemperatureValue } from "./TemperatureValue";

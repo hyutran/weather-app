@@ -9,10 +9,10 @@ import {
 } from "react";
 import { getWeatherIcon } from "../lib/weatherIcon";
 import { getWeatherDescription } from "../lib/weatherDescription";
-import { isNightTime } from "../lib/utils";
+import { isNightTime } from "../lib/dateTime";
 import { LocationCard } from "./LocationCard";
-import { AddCityDialog } from "./AddCityDialog";
-import { useWeather } from "../context/WeatherContext";
+import { AddLocationDialog } from "./AddLocationDialog";
+import { useLocations } from "../context/WeatherContext";
 
 function LocationCardSkeleton({ name }: { name: string }) {
   return (
@@ -33,15 +33,15 @@ function LocationCardSkeleton({ name }: { name: string }) {
   );
 }
 
-export function CityList() {
+export function LocationList() {
   const {
-    userCities,
+    userLocations,
     weatherBySlug,
     hardRefreshPendingSlugs,
-    addCity,
-    removeCity,
-    moveCity,
-  } = useWeather();
+    addLocation,
+    removeLocation,
+    moveLocation,
+  } = useLocations();
 
   const itemRefs = useRef(new Map<string, HTMLLIElement>());
   const previousRects = useRef(new Map<string, DOMRect>());
@@ -60,11 +60,11 @@ export function CityList() {
       "(prefers-reduced-motion: reduce)"
     ).matches;
 
-    for (const city of userCities) {
-      const element = itemRefs.current.get(city.slug);
-      const previousRect = previousRects.current.get(city.slug);
+    for (const location of userLocations) {
+      const element = itemRefs.current.get(location.slug);
+      const previousRect = previousRects.current.get(location.slug);
 
-      if (!element || !previousRect || city.slug === draggedSlugRef.current) {
+      if (!element || !previousRect || location.slug === draggedSlugRef.current) {
         continue;
       }
 
@@ -75,9 +75,9 @@ export function CityList() {
         continue;
       }
 
-      reorderAnimations.current.get(city.slug)?.cancel();
+      reorderAnimations.current.get(location.slug)?.cancel();
       reorderAnimations.current.set(
-        city.slug,
+        location.slug,
         element.animate(
           [
             { transform: `translateY(${deltaY}px)` },
@@ -92,7 +92,7 @@ export function CityList() {
     }
 
     previousRects.current.clear();
-  }, [userCities]);
+  }, [userLocations]);
 
   function capturePositions() {
     previousRects.current = new Map(
@@ -103,9 +103,9 @@ export function CityList() {
     );
   }
 
-  function reorderCity(slug: string, targetSlug: string) {
+  function reorderLocation(slug: string, targetSlug: string) {
     capturePositions();
-    moveCity(slug, targetSlug);
+    moveLocation(slug, targetSlug);
   }
 
   function handleDragStart(event: DragEvent<HTMLLIElement>, slug: string) {
@@ -128,10 +128,10 @@ export function CityList() {
       return;
     }
 
-    const activeIndex = userCities.findIndex(
+    const activeIndex = userLocations.findIndex(
       ({ slug }) => slug === activeSlug
     );
-    const targetIndex = userCities.findIndex(
+    const targetIndex = userLocations.findIndex(
       ({ slug }) => slug === targetSlug
     );
     const targetRect = event.currentTarget.getBoundingClientRect();
@@ -145,19 +145,19 @@ export function CityList() {
       return;
     }
 
-    reorderCity(activeSlug, targetSlug);
+    reorderLocation(activeSlug, targetSlug);
   }
 
   function finishDragging() {
     const activeSlug = draggedSlugRef.current;
 
     if (activeSlug) {
-      const city = userCities.find(({ slug }) => slug === activeSlug);
-      const position = userCities.findIndex(({ slug }) => slug === activeSlug);
+      const location = userLocations.find(({ slug }) => slug === activeSlug);
+      const position = userLocations.findIndex(({ slug }) => slug === activeSlug);
 
-      if (city && position !== -1) {
+      if (location && position !== -1) {
         setAnnouncement(
-          `${city.name} moved to position ${position + 1} of ${userCities.length}.`
+          `${location.name} moved to position ${position + 1} of ${userLocations.length}.`
         );
       }
     }
@@ -170,7 +170,7 @@ export function CityList() {
     }, 0);
   }
 
-  function handleKeyDown(
+  function handleReorderKeyDown(
     event: KeyboardEvent<HTMLLIElement>,
     slug: string,
     index: number
@@ -180,16 +180,16 @@ export function CityList() {
     }
 
     const direction = event.key === "ArrowUp" ? -1 : event.key === "ArrowDown" ? 1 : 0;
-    const targetCity = userCities[index + direction];
+    const targetLocation = userLocations[index + direction];
 
-    if (direction === 0 || !targetCity) {
+    if (direction === 0 || !targetLocation) {
       return;
     }
 
     event.preventDefault();
-    reorderCity(slug, targetCity.slug);
+    reorderLocation(slug, targetLocation.slug);
     setAnnouncement(
-      `${userCities[index].name} moved to position ${index + direction + 1} of ${userCities.length}.`
+      `${userLocations[index].name} moved to position ${index + direction + 1} of ${userLocations.length}.`
     );
   }
 
@@ -203,57 +203,47 @@ export function CityList() {
         {announcement}
       </p>
       <div className="mb-3 flex justify-end">
-        {/* <button
-          type="button"
-          onClick={() => void refreshAll()}
-          disabled={!hasHydrated || isRefreshing}
-          className="flex items-center gap-2 rounded-lg px-2.5 py-2 text-sm font-medium text-foreground/70 transition-colors hover:bg-white/10 hover:text-foreground disabled:pointer-events-none disabled:opacity-50"
-        >
-          <RefreshCwIcon
-            className={`size-4 ${isRefreshing ? "animate-spin" : ""}`}
-          />
-          Refresh weather
-        </button> */}
+
       </div>
       <ul className="flex flex-col gap-3">
-        {userCities.map((city, index) => {
-          const entry = weatherBySlug[city.slug];
+        {userLocations.map((location, index) => {
+          const weatherEntry = weatherBySlug[location.slug];
           const isHardRefreshPending = hardRefreshPendingSlugs.has(
-            city.slug
+            location.slug
           );
 
-          if (!entry || isHardRefreshPending) {
+          if (!weatherEntry || isHardRefreshPending) {
             return (
               <li
-                key={city.slug}
+                key={location.slug}
                 ref={(element) => {
-                  if (element) itemRefs.current.set(city.slug, element);
-                  else itemRefs.current.delete(city.slug);
+                  if (element) itemRefs.current.set(location.slug, element);
+                  else itemRefs.current.delete(location.slug);
                 }}
                 draggable
                 tabIndex={0}
                 aria-roledescription="sortable location"
                 aria-describedby="location-reorder-instructions"
-                onDragStart={(event) => handleDragStart(event, city.slug)}
-                onDragOver={(event) => handleDragOver(event, city.slug)}
+                onDragStart={(event) => handleDragStart(event, location.slug)}
+                onDragOver={(event) => handleDragOver(event, location.slug)}
                 onDrop={(event) => {
                   event.preventDefault();
                   finishDragging();
                 }}
                 onDragEnd={finishDragging}
-                onKeyDown={(event) => handleKeyDown(event, city.slug, index)}
+                onKeyDown={(event) => handleReorderKeyDown(event, location.slug, index)}
                 onClickCapture={(event) => {
                   if (justDragged.current) event.preventDefault();
                 }}
-                data-dragging={draggedSlug === city.slug || undefined}
+                data-dragging={draggedSlug === location.slug || undefined}
                 className="location-card-sortable h-full"
               >
-                <LocationCardSkeleton name={city.name} />
+                <LocationCardSkeleton name={location.name} />
               </li>
             );
           }
 
-          const { weather } = entry;
+          const { weather } = weatherEntry;
           const Icon = getWeatherIcon(weather.current.weatherCode);
           const description = getWeatherDescription(
             weather.current.weatherCode
@@ -266,47 +256,47 @@ export function CityList() {
 
           return (
             <li
-              key={city.slug}
+              key={location.slug}
               ref={(element) => {
-                if (element) itemRefs.current.set(city.slug, element);
-                else itemRefs.current.delete(city.slug);
+                if (element) itemRefs.current.set(location.slug, element);
+                else itemRefs.current.delete(location.slug);
               }}
               draggable
               tabIndex={0}
               aria-roledescription="sortable location"
               aria-describedby="location-reorder-instructions"
-              onDragStart={(event) => handleDragStart(event, city.slug)}
-              onDragOver={(event) => handleDragOver(event, city.slug)}
+              onDragStart={(event) => handleDragStart(event, location.slug)}
+              onDragOver={(event) => handleDragOver(event, location.slug)}
               onDrop={(event) => {
                 event.preventDefault();
                 finishDragging();
               }}
               onDragEnd={finishDragging}
-              onKeyDown={(event) => handleKeyDown(event, city.slug, index)}
+              onKeyDown={(event) => handleReorderKeyDown(event, location.slug, index)}
               onClickCapture={(event) => {
                 if (justDragged.current) event.preventDefault();
               }}
-              data-dragging={draggedSlug === city.slug || undefined}
+              data-dragging={draggedSlug === location.slug || undefined}
               className="location-card-sortable h-full animate-fade-in"
             >
               <LocationCard
-                slug={city.slug}
-                name={city.name}
+                slug={location.slug}
+                name={location.name}
                 description={description}
                 temperature={weather.current.temperature}
                 timezone={weather.current.timezone}
                 Icon={Icon}
                 isNight={isNight}
                 weatherCode={weather.current.weatherCode}
-                onRemove={() => removeCity(city.slug)}
+                onRemove={() => removeLocation(location.slug)}
               />
             </li>
           );
         })}
         <li className="h-full">
-          <AddCityDialog
-            existingSlugs={userCities.map((city) => city.slug)}
-            onAdd={(city) => void addCity(city)}
+          <AddLocationDialog
+            existingSlugs={userLocations.map((location) => location.slug)}
+            onAdd={(location) => void addLocation(location)}
           />
         </li>
       </ul>

@@ -12,14 +12,14 @@ import {
 } from "react";
 import { getWeather } from "../actions/actions";
 import type { WeatherData } from "../lib/types";
-import { cities, type City } from "@/data/cities";
+import { locations, type Location } from "@/data/locations";
 
-const CITY_STORAGE_KEY = "user-cities";
+const LOCATION_STORAGE_KEY = "user-locations";
 const WEATHER_STORAGE_KEY = "weather-cache-v1";
 const WEATHER_CACHE_TTL = 5 * 60 * 1000;
-const DEFAULT_CITY_SLUGS = ["new-york", "london", "tokyo"];
-const DEFAULT_CITIES = cities.filter((city) =>
-  DEFAULT_CITY_SLUGS.includes(city.slug)
+const DEFAULT_LOCATION_SLUGS = ["hanoi", "new-york", "london", "tokyo"];
+const DEFAULT_LOCATIONS = locations.filter((location) =>
+  DEFAULT_LOCATION_SLUGS.includes(location.slug)
 );
 
 interface WeatherCacheEntry {
@@ -29,36 +29,42 @@ interface WeatherCacheEntry {
 
 type WeatherBySlug = Record<string, WeatherCacheEntry>;
 
-interface WeatherContextValue {
-  userCities: City[];
+interface LocationsContextValue {
+  userLocations: Location[];
   weatherBySlug: WeatherBySlug;
+  hardRefreshPendingSlugs: Set<string>;
+  addLocation: (location: Location) => Promise<void>;
+  removeLocation: (slug: string) => void;
+  moveLocation: (slug: string, targetSlug: string) => void;
+}
+
+interface RefreshStatusContextValue {
   hasHydrated: boolean;
   isRefreshing: boolean;
-  hardRefreshPendingSlugs: Set<string>;
-  addCity: (city: City) => Promise<void>;
-  removeCity: (slug: string) => void;
-  moveCity: (slug: string, targetSlug: string) => void;
   refreshAll: () => Promise<void>;
 }
 
-const WeatherContext = createContext<WeatherContextValue | null>(null);
+const LocationsContext = createContext<LocationsContextValue | null>(null);
+const RefreshStatusContext = createContext<RefreshStatusContextValue | null>(
+  null
+);
 
-function readStoredCities(): City[] {
+function readStoredLocations(): Location[] {
   try {
-    const raw = window.localStorage.getItem(CITY_STORAGE_KEY);
+    const raw = window.localStorage.getItem(LOCATION_STORAGE_KEY);
     const slugs: unknown = raw ? JSON.parse(raw) : null;
 
     if (!Array.isArray(slugs) || slugs.length === 0) {
-      return DEFAULT_CITIES;
+      return DEFAULT_LOCATIONS;
     }
 
     const resolved = slugs
-      .map((slug) => cities.find((city) => city.slug === slug))
-      .filter((city): city is City => Boolean(city));
+      .map((slug) => locations.find((location) => location.slug === slug))
+      .filter((location): location is Location => Boolean(location));
 
-    return resolved.length > 0 ? resolved : DEFAULT_CITIES;
+    return resolved.length > 0 ? resolved : DEFAULT_LOCATIONS;
   } catch {
-    return DEFAULT_CITIES;
+    return DEFAULT_LOCATIONS;
   }
 }
 
@@ -95,7 +101,7 @@ function readStoredWeather(): WeatherBySlug {
   }
 }
 
-function isFresh(entry: WeatherCacheEntry | undefined) {
+function isCacheEntryFresh(entry: WeatherCacheEntry | undefined) {
   return Boolean(entry && Date.now() - entry.updatedAt < WEATHER_CACHE_TTL);
 }
 
@@ -109,7 +115,7 @@ function isBrowserReload() {
 
 export function WeatherProvider({ children }: { children: ReactNode }) {
   const hasInitialized = useRef(false);
-  const [userCities, setUserCities] = useState<City[]>(DEFAULT_CITIES);
+  const [userLocations, setUserLocations] = useState<Location[]>(DEFAULT_LOCATIONS);
   const [weatherBySlug, setWeatherBySlug] = useState<WeatherBySlug>({});
   const [hasHydrated, setHasHydrated] = useState(false);
   const [refreshingSlugs, setRefreshingSlugs] = useState<Set<string>>(
@@ -120,18 +126,18 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
   >(() => new Set());
 
   const loadWeather = useCallback(
-    async (targetCities: City[], forceRefresh = false) => {
-      if (targetCities.length === 0) {
+    async (targetLocations: Location[], forceRefresh = false) => {
+      if (targetLocations.length === 0) {
         return;
       }
 
-      const slugs = targetCities.map((city) => city.slug);
+      const slugs = targetLocations.map((location) => location.slug);
       setRefreshingSlugs((current) => new Set([...current, ...slugs]));
 
       const results = await Promise.allSettled(
-        targetCities.map(async (city) => ({
-          city,
-          weather: await getWeather(city.lat, city.lon, forceRefresh),
+        targetLocations.map(async (location) => ({
+          location,
+          weather: await getWeather(location.lat, location.lon, forceRefresh),
         }))
       );
 
@@ -140,7 +146,7 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
 
         for (const result of results) {
           if (result.status === "fulfilled") {
-            next[result.value.city.slug] = {
+            next[result.value.location.slug] = {
               weather: result.value.weather,
               updatedAt: Date.now(),
             };
@@ -178,23 +184,25 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
 
     hasInitialized.current = true;
 
-    const storedCities = readStoredCities();
+    const storedLocations = readStoredLocations();
     const storedWeather = readStoredWeather();
 
-    setUserCities(storedCities);
+    setUserLocations(storedLocations);
     setWeatherBySlug(storedWeather);
     setHasHydrated(true);
 
     const shouldForceRefresh = isBrowserReload();
-    const citiesToLoad = shouldForceRefresh
-      ? storedCities
-      : storedCities.filter((city) => !isFresh(storedWeather[city.slug]));
+    const locationsToLoad = shouldForceRefresh
+      ? storedLocations
+      : storedLocations.filter((location) => !isCacheEntryFresh(storedWeather[location.slug]));
 
-    setHardRefreshPendingSlugs(
-      new Set(shouldForceRefresh ? citiesToLoad.map((city) => city.slug) : [])
-    );
+    if (shouldForceRefresh) {
+      setHardRefreshPendingSlugs(
+        new Set(locationsToLoad.map((location) => location.slug))
+      );
+    }
 
-    void loadWeather(citiesToLoad, shouldForceRefresh);
+    void loadWeather(locationsToLoad, shouldForceRefresh);
   }, [loadWeather]);
 
   useEffect(() => {
@@ -203,10 +211,10 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
     }
 
     window.localStorage.setItem(
-      CITY_STORAGE_KEY,
-      JSON.stringify(userCities.map((city) => city.slug))
+      LOCATION_STORAGE_KEY,
+      JSON.stringify(userLocations.map((location) => location.slug))
     );
-  }, [hasHydrated, userCities]);
+  }, [hasHydrated, userLocations]);
 
   useEffect(() => {
     if (!hasHydrated) {
@@ -219,87 +227,102 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
     );
   }, [hasHydrated, weatherBySlug]);
 
-  const addCity = useCallback(
-    async (city: City) => {
-      if (userCities.some((existing) => existing.slug === city.slug)) {
+  const addLocation = useCallback(
+    async (location: Location) => {
+      if (userLocations.some((existing) => existing.slug === location.slug)) {
         return;
       }
 
-      setUserCities((current) => [...current, city]);
+      setUserLocations((current) => [...current, location]);
 
-      if (!isFresh(weatherBySlug[city.slug])) {
-        await loadWeather([city]);
+      if (!isCacheEntryFresh(weatherBySlug[location.slug])) {
+        await loadWeather([location]);
       }
     },
-    [loadWeather, userCities, weatherBySlug]
+    [loadWeather, userLocations, weatherBySlug]
   );
 
-  const removeCity = useCallback((slug: string) => {
-    setUserCities((current) => current.filter((city) => city.slug !== slug));
+  const removeLocation = useCallback((slug: string) => {
+    setUserLocations((current) => current.filter((location) => location.slug !== slug));
   }, []);
 
-  const moveCity = useCallback((slug: string, targetSlug: string) => {
+  const moveLocation = useCallback((slug: string, targetSlug: string) => {
     if (slug === targetSlug) {
       return;
     }
 
-    setUserCities((current) => {
-      const fromIndex = current.findIndex((city) => city.slug === slug);
-      const targetIndex = current.findIndex((city) => city.slug === targetSlug);
+    setUserLocations((current) => {
+      const fromIndex = current.findIndex((location) => location.slug === slug);
+      const targetIndex = current.findIndex((location) => location.slug === targetSlug);
 
       if (fromIndex === -1 || targetIndex === -1) {
         return current;
       }
 
       const next = [...current];
-      const [movedCity] = next.splice(fromIndex, 1);
-      next.splice(targetIndex, 0, movedCity);
+      const [movedLocation] = next.splice(fromIndex, 1);
+      next.splice(targetIndex, 0, movedLocation);
 
       return next;
     });
   }, []);
 
   const refreshAll = useCallback(async () => {
-    await loadWeather(userCities, true);
-  }, [loadWeather, userCities]);
+    await loadWeather(userLocations, true);
+  }, [loadWeather, userLocations]);
 
-  const value = useMemo<WeatherContextValue>(
+  const locationsValue = useMemo<LocationsContextValue>(
     () => ({
-      userCities,
+      userLocations,
       weatherBySlug,
-      hasHydrated,
-      isRefreshing: refreshingSlugs.size > 0,
       hardRefreshPendingSlugs,
-      addCity,
-      removeCity,
-      moveCity,
-      refreshAll,
+      addLocation,
+      removeLocation,
+      moveLocation,
     }),
     [
-      addCity,
+      addLocation,
       hardRefreshPendingSlugs,
-      hasHydrated,
-      refreshAll,
-      refreshingSlugs,
-      removeCity,
-      moveCity,
-      userCities,
+      removeLocation,
+      moveLocation,
+      userLocations,
       weatherBySlug,
     ]
   );
 
+  const refreshStatusValue = useMemo<RefreshStatusContextValue>(
+    () => ({
+      hasHydrated,
+      isRefreshing: refreshingSlugs.size > 0,
+      refreshAll,
+    }),
+    [hasHydrated, refreshingSlugs, refreshAll]
+  );
+
   return (
-    <WeatherContext.Provider value={value}>
-      {children}
-    </WeatherContext.Provider>
+    <LocationsContext.Provider value={locationsValue}>
+      <RefreshStatusContext.Provider value={refreshStatusValue}>
+        {children}
+      </RefreshStatusContext.Provider>
+    </LocationsContext.Provider>
   );
 }
 
-export function useWeather() {
-  const context = useContext(WeatherContext);
+export function useLocations() {
+  const context = useContext(LocationsContext);
 
   if (!context) {
-    throw new Error("useWeather must be used within a WeatherProvider");
+    throw new Error("useLocations must be used within a WeatherProvider");
+  }
+
+  return context;
+}
+
+export function useRefreshStatus() {
+  const context = useContext(RefreshStatusContext);
+
+  if (!context) {
+    throw new Error("useRefreshStatus must be used within a WeatherProvider");
   }
 
   return context;

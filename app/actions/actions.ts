@@ -23,21 +23,21 @@ export async function getWeather(
     throw new Error(`Weather API error: ${response.status}`);
   }
 
-  const data = await response.json();
+  const weatherResponse = await response.json();
 
   return {
     current: {
-      temperature: Math.round(data.current.temperature_2m),
-      weatherCode: data.current.weather_code,
-      timezone: data.timezone,
-      sunrise: data.daily.sunrise[0],
-      sunset: data.daily.sunset[0],
+      temperature: Math.round(weatherResponse.current.temperature_2m),
+      weatherCode: weatherResponse.current.weather_code,
+      timezone: weatherResponse.timezone,
+      sunrise: weatherResponse.daily.sunrise[0],
+      sunset: weatherResponse.daily.sunset[0],
     },
-    daily: data.daily.time.map((date: string, index: number) => ({
+    daily: weatherResponse.daily.time.map((date: string, index: number) => ({
       date,
-      maxTemp: Math.round(data.daily.temperature_2m_max[index]),
-      minTemp: Math.round(data.daily.temperature_2m_min[index]),
-      weatherCode: data.daily.weather_code[index],
+      maxTemp: Math.round(weatherResponse.daily.temperature_2m_max[index]),
+      minTemp: Math.round(weatherResponse.daily.temperature_2m_min[index]),
+      weatherCode: weatherResponse.daily.weather_code[index],
     })),
   };
 }

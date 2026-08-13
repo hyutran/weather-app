@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
-import { locations, getLocationBySlug } from "../data/locations";
+import { locations, getLocationBySlug } from "@/data/locations";
 import { getWeather } from "../actions/actions";
 import { getWeatherIcon } from "../lib/weatherIcon";
 import { getWeatherDescription } from "../lib/weatherDescription";
 import { getWeatherBackground } from "../lib/weatherBackgrounds";
-import { getCurrentTimeInTimezone, formatDate, getDayName, isNightTime } from "../lib/utils";
+import { getCurrentTimeInTimezone, formatDate, getDayName, isNightTime } from "../lib/dateTime";
 import { DaysListItem } from "../components/DaysListItem";
 import { TemperatureValue } from "../components/TemperatureValue";
 

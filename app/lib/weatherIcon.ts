@@ -1,9 +1,9 @@
 import { WeatherIcon } from "./types";
 import { PartlyCloudy, ClearSky, MainlyClear, Overcast, Rainy, Snow, Thunderstorm } from "../components/icons";
 
-export function getWeatherIcon(code: number): WeatherIcon {
+export function getWeatherIcon(weatherCode: number): WeatherIcon {
   // Map weather codes to icons
-  switch (code) {
+  switch (weatherCode) {
     case 0: // Clear sky
       return ClearSky;
     case 1: // Mainly clear

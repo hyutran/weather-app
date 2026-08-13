@@ -21,37 +21,37 @@ import {
   ComboboxItem,
   ComboboxList,
 } from "@/components/ui/combobox";
-import { cities, type City } from "@/data/cities";
+import { locations, type Location } from "@/data/locations";
 
-interface AddCityDialogProps {
+interface AddLocationDialogProps {
   existingSlugs: string[];
-  onAdd: (city: City) => void;
+  onAdd: (location: Location) => void;
 }
 
-export function AddCityDialog({ existingSlugs, onAdd }: AddCityDialogProps) {
+export function AddLocationDialog({ existingSlugs, onAdd }: AddLocationDialogProps) {
   const [open, setOpen] = useState(false);
-  const [selectedCity, setSelectedCity] = useState<City | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
 
-  const availableCities = cities.filter(
-    (city) => !existingSlugs.includes(city.slug)
+  const availableLocations = locations.filter(
+    (location) => !existingSlugs.includes(location.slug)
   );
 
   function handleOpenChange(nextOpen: boolean) {
     setOpen(nextOpen);
     if (!nextOpen) {
-      setSelectedCity(null);
+      setSelectedLocation(null);
     }
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!selectedCity) {
+    if (!selectedLocation) {
       return;
     }
 
-    onAdd(selectedCity);
-    setSelectedCity(null);
+    onAdd(selectedLocation);
+    setSelectedLocation(null);
     setOpen(false);
   }
 
@@ -59,30 +59,30 @@ export function AddCityDialog({ existingSlugs, onAdd }: AddCityDialogProps) {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger className="flex h-full min-h-26 w-full items-center justify-center gap-3 rounded-4xl px-5 py-6 text-foreground/80 shadow-lg shadow-black/10 outline outline-dashed -outline-offset-1 bg-card/40 outline-white/20 transition-colors hover:outline-white/40 hover:text-foreground sm:px-6 xl:px-7">
         <PlusIcon className="size-4" />
-        <span className="text-sm font-medium">Add city</span>
+        <span className="text-sm font-medium">Add location</span>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add a city</DialogTitle>
+          <DialogTitle>Add a location</DialogTitle>
           <DialogDescription>
-            Search for a city to add it to your list.
+            Search for a location to add it to your list.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <Combobox
-            items={availableCities}
-            value={selectedCity}
-            onValueChange={setSelectedCity}
-            itemToStringLabel={(city) => city?.name ?? ""}
+            items={availableLocations}
+            value={selectedLocation}
+            onValueChange={setSelectedLocation}
+            itemToStringLabel={(location) => location?.name ?? ""}
           >
-            <ComboboxInput placeholder="Search cities..." />
+            <ComboboxInput placeholder="Search locations..." />
             <ComboboxContent>
-              <ComboboxEmpty>No city found.</ComboboxEmpty>
+              <ComboboxEmpty>No location found.</ComboboxEmpty>
               <ComboboxList>
                 <ComboboxCollection>
-                  {(city: City) => (
-                    <ComboboxItem key={city.slug} value={city}>
-                      {city.name}
+                  {(location: Location) => (
+                    <ComboboxItem key={location.slug} value={location}>
+                      {location.name}
                     </ComboboxItem>
                   )}
                 </ComboboxCollection>
@@ -90,8 +90,8 @@ export function AddCityDialog({ existingSlugs, onAdd }: AddCityDialogProps) {
             </ComboboxContent>
           </Combobox>
           <DialogFooter>
-            <Button type="submit" disabled={!selectedCity}>
-              Add city
+            <Button type="submit" disabled={!selectedLocation}>
+              Add location
             </Button>
           </DialogFooter>
         </form>

@@ -1,10 +1,10 @@
 import { WeatherIconProps } from "../../../lib/types";
 import { Cloud, Rain, Thunderbolt } from "../primitives";
-import { WeatherIcon } from "../WeatherIcon";
+import { WeatherIconFrame } from "../WeatherIconFrame";
 
 export function Thunderstorm({ className }: WeatherIconProps) {
     return (
-        <WeatherIcon className={className}>
+        <WeatherIconFrame className={className}>
             <g className="animate-fall [--animation-delay:-1s]">
                 <Rain x={-15} y={-50} scale={0.9} />
             </g>
@@ -15,6 +15,6 @@ export function Thunderstorm({ className }: WeatherIconProps) {
                 <Thunderbolt y={90} scale={0.6} />
             </g>
             <Cloud y={-50} />
-        </WeatherIcon>
+        </WeatherIconFrame>
     );
 }

@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import Link from "next/link";
-import { Effects } from "./components/icons/Effects";
+import { WeatherIconDefs } from "./components/icons/WeatherIconDefs";
 import { TemperatureToggle } from "./components/TemperatureToggle";
 import { TemperatureScaleProvider } from "./context/TemperatureScaleContext";
 import { WeatherProvider } from "./context/WeatherContext";
@@ -43,7 +43,7 @@ export default function RootLayout({
       >
         <WeatherProvider>
           <TemperatureScaleProvider>
-            <Effects />
+            <WeatherIconDefs />
             <header className="fixed top-0 left-0 w-full z-10 bg-">
               <div className="max-w-xl mx-auto py-12 px-6">
                 <div className="flex items-center justify-between gap-4">
