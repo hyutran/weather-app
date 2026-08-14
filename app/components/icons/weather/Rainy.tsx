@@ -6,9 +6,6 @@ export function Rainy({ className }: WeatherIconProps) {
     return (
         <WeatherIconFrame className={className}>
             <Cloud y={-20} />
-            {/* <g className="animate-fall">
-                <Rain x={-20} y={40} />
-            </g> */}
             <g className="animate-fall [--animation-delay:-0.1s]">
                 <Rain x={-5} y={-5} />
             </g>
