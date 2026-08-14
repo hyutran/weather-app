@@ -7,6 +7,7 @@ interface TemperatureValueProps {
   celsius: number;
 }
 
+// Renders a Celsius value converted and formatted for the user's preferred scale.
 export function TemperatureValue({ celsius }: TemperatureValueProps) {
   const { scale } = useTemperatureScale();
 

@@ -8,6 +8,7 @@ interface DaysListItemProps {
   Icon: WeatherIcon;
 }
 
+// Renders one row of the 7-day forecast list: day name, icon, and high/low temps.
 export function DaysListItem({
   day,
   maxTemp,

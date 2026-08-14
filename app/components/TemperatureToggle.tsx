@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/select";
 import { useTemperatureScale } from "../context/TemperatureScaleContext";
 
+// Dropdown for switching the app's temperature scale between Celsius and Fahrenheit.
 export function TemperatureToggle() {
   const { scale, setScale } = useTemperatureScale();
 

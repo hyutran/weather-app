@@ -17,6 +17,7 @@ interface TemperatureScaleProviderProps {
   children: ReactNode;
 }
 
+// Reads the persisted temperature scale from localStorage, defaulting to Celsius.
 function readStoredScale(): TemperatureScale {
   if (typeof window === "undefined") {
     return "celsius";
@@ -26,6 +27,7 @@ function readStoredScale(): TemperatureScale {
   return stored === "celsius" || stored === "fahrenheit" ? stored : "celsius";
 }
 
+// Provides the current temperature scale to descendants and persists changes to localStorage.
 export function TemperatureScaleProvider({
   children,
 }: TemperatureScaleProviderProps) {
@@ -42,6 +44,7 @@ export function TemperatureScaleProvider({
   );
 }
 
+// Hook to read/set the temperature scale; throws if used outside a TemperatureScaleProvider.
 export function useTemperatureScale() {
   const context = useContext(TemperatureScaleContext);
 

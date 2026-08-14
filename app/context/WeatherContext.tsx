@@ -49,6 +49,7 @@ const RefreshStatusContext = createContext<RefreshStatusContextValue | null>(
   null
 );
 
+// Reads the user's saved location list from localStorage, falling back to defaults if missing or invalid.
 function readStoredLocations(): Location[] {
   try {
     const raw = window.localStorage.getItem(LOCATION_STORAGE_KEY);
@@ -68,6 +69,7 @@ function readStoredLocations(): Location[] {
   }
 }
 
+// Reads cached weather data from localStorage, filtering out any malformed entries.
 function readStoredWeather(): WeatherBySlug {
   try {
     const raw = window.localStorage.getItem(WEATHER_STORAGE_KEY);
@@ -101,10 +103,12 @@ function readStoredWeather(): WeatherBySlug {
   }
 }
 
+// Checks whether a cached weather entry is still within the TTL window.
 function isCacheEntryFresh(entry: WeatherCacheEntry | undefined) {
   return Boolean(entry && Date.now() - entry.updatedAt < WEATHER_CACHE_TTL);
 }
 
+// Detects whether the current page load was a browser reload (vs. a fresh navigation).
 function isBrowserReload() {
   const navigationEntry = performance.getEntriesByType(
     "navigation"
@@ -113,6 +117,7 @@ function isBrowserReload() {
   return navigationEntry?.type === "reload";
 }
 
+// Provides the tracked locations, their cached weather, and refresh state; syncs both to localStorage.
 export function WeatherProvider({ children }: { children: ReactNode }) {
   const hasInitialized = useRef(false);
   const [userLocations, setUserLocations] = useState<Location[]>(DEFAULT_LOCATIONS);
@@ -125,6 +130,7 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
     Set<string>
   >(() => new Set());
 
+  // Fetches weather for the given locations and merges the results into the cache.
   const loadWeather = useCallback(
     async (targetLocations: Location[], forceRefresh = false) => {
       if (targetLocations.length === 0) {
@@ -227,6 +233,7 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
     );
   }, [hasHydrated, weatherBySlug]);
 
+  // Adds a location to the user's list and fetches its weather if not already cached.
   const addLocation = useCallback(
     async (location: Location) => {
       if (userLocations.some((existing) => existing.slug === location.slug)) {
@@ -242,10 +249,12 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
     [loadWeather, userLocations, weatherBySlug]
   );
 
+  // Removes a location from the user's list.
   const removeLocation = useCallback((slug: string) => {
     setUserLocations((current) => current.filter((location) => location.slug !== slug));
   }, []);
 
+  // Moves a location to sit at another location's position in the list.
   const moveLocation = useCallback((slug: string, targetSlug: string) => {
     if (slug === targetSlug) {
       return;
@@ -267,6 +276,7 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  // Force-refreshes weather for every currently tracked location.
   const refreshAll = useCallback(async () => {
     await loadWeather(userLocations, true);
   }, [loadWeather, userLocations]);
@@ -308,6 +318,7 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// Hook to access tracked locations, their weather, and location-list mutators.
 export function useLocations() {
   const context = useContext(LocationsContext);
 
@@ -318,6 +329,7 @@ export function useLocations() {
   return context;
 }
 
+// Hook to access hydration/refresh status and trigger a manual refresh of all locations.
 export function useRefreshStatus() {
   const context = useContext(RefreshStatusContext);
 

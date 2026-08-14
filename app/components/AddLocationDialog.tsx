@@ -28,6 +28,7 @@ interface AddLocationDialogProps {
   onAdd: (location: Location) => void;
 }
 
+// Dialog for searching and adding a new location to the tracked list.
 export function AddLocationDialog({ existingSlugs, onAdd }: AddLocationDialogProps) {
   const [open, setOpen] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
@@ -36,6 +37,7 @@ export function AddLocationDialog({ existingSlugs, onAdd }: AddLocationDialogPro
     (location) => !existingSlugs.includes(location.slug)
   );
 
+  // Resets the selected location whenever the dialog closes.
   function handleOpenChange(nextOpen: boolean) {
     setOpen(nextOpen);
     if (!nextOpen) {
@@ -43,6 +45,7 @@ export function AddLocationDialog({ existingSlugs, onAdd }: AddLocationDialogPro
     }
   }
 
+  // Adds the selected location and closes the dialog.
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 

@@ -25,6 +25,7 @@ export const metadata: Metadata = {
   description: "Check the weather in our favorite locations in Vietnam",
 };
 
+// Root layout wrapping every page with fonts, weather/temperature providers, and the shared header.
 export default function RootLayout({
   children,
 }: Readonly<{
