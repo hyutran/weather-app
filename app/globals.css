@@ -282,7 +282,6 @@
 }
 /* Location card gradient and glows */
 .weather-background--card {
-  /* border-bottom: var(--weather-card-border-size) solid transparent; */
   background-image:
     radial-gradient(ellipse at top,
       color-mix(in oklch, var(--weather-glow) 85%, transparent),
