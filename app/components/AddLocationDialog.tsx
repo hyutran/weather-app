@@ -22,6 +22,7 @@ import {
   ComboboxList,
 } from "@/components/ui/combobox";
 import { locations, type Location } from "@/data/locations";
+import { weatherCardSurface } from "./weatherCardSurface";
 
 interface AddLocationDialogProps {
   existingSlugs: string[];
@@ -60,7 +61,9 @@ export function AddLocationDialog({ existingSlugs, onAdd }: AddLocationDialogPro
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger className="flex h-full min-h-26 w-full items-center justify-center gap-3 rounded-4xl px-5 py-6 text-foreground/80 shadow-lg shadow-black/10 outline outline-dashed -outline-offset-1 bg-card/40 outline-white/20 transition-colors hover:outline-white/40 hover:text-foreground sm:px-6 xl:px-7">
+      <DialogTrigger
+        className={`${weatherCardSurface} flex h-full w-full items-center justify-center gap-3 bg-foreground/10 text-foreground/80 outline outline-dashed -outline-offset-1 outline-input transition-colors hover:text-foreground hover:outline-foreground/40`}
+      >
         <PlusIcon className="size-4" />
         <span className="text-sm font-medium">Add location</span>
       </DialogTrigger>

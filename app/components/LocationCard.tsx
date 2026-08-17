@@ -4,6 +4,7 @@ import { getCurrentTimeInTimezone } from "../lib/dateTime";
 import { WeatherIcon } from "../lib/types";
 import { getWeatherBackground } from "../lib/weatherBackgrounds";
 import { TemperatureValue } from "./TemperatureValue";
+import { weatherCardSurface } from "./weatherCardSurface";
 
 interface LocationCardProps {
   slug: string;
@@ -31,11 +32,11 @@ export function LocationCard({
   const background = getWeatherBackground(weatherCode, isNight ?? false);
 
   return (
-    <div className="group/card relative h-full ">
+    <div className="group/card relative h-full">
       <Link
         href={`/${slug}`}
         draggable={false}
-        className={`weather-background--card block h-full rounded-4xl px-6 py-8 sm:px-7 xl:px-8 ${background.className}`}
+        className={`${weatherCardSurface} weather-background--card block h-full ${background.className}`}
         style={background.style}
       >
         <div className="flex justify-between items-center gap-1">

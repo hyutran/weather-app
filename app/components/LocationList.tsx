@@ -7,6 +7,7 @@ import { useReorderableList } from "../hooks/useReorderableList";
 import { LocationCard } from "./LocationCard";
 import { LocationCardSkeleton } from "./LocationCardSkeleton";
 import { AddLocationDialog } from "./AddLocationDialog";
+import { PageShell } from "./PageShell";
 import { useLocations } from "../context/WeatherContext";
 import { cn } from "@/lib/utils";
 
@@ -26,7 +27,7 @@ export function LocationList() {
   );
 
   return (
-    <div className="mx-auto max-w-xl px-6 py-32">
+    <PageShell>
       <p id={instructionsId} className="sr-only">
         Drag a location to reorder it, or focus it and press Alt or Option with
         the up or down arrow key.
@@ -92,6 +93,6 @@ export function LocationList() {
           />
         </li>
       </ul>
-    </div>
+    </PageShell>
   );
 }

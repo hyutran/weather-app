@@ -1,6 +1,10 @@
+import { weatherCardSurface } from "./weatherCardSurface";
+
 export function LocationCardSkeleton({ name }: { name: string }) {
   return (
-    <div className="h-full min-h-28 rounded-4xl bg-white/10 px-5 py-6 shadow-md/80 shadow-black/30 inset-shadow-xs inset-shadow-white/20 sm:px-6 xl:px-7 ">
+    <div
+      className={`${weatherCardSurface} h-full bg-foreground/10 inset-shadow-xs inset-shadow-white/20`}
+    >
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-base font-semibold text-foreground text-shadow-md">

@@ -6,6 +6,7 @@ import { getWeatherDescription } from "../lib/weatherDescription";
 import { getWeatherBackground } from "../lib/weatherBackgrounds";
 import { getCurrentTimeInTimezone, formatDate, getDayName, isNightTime } from "../lib/dateTime";
 import { DaysListItem } from "../components/DaysListItem";
+import { PageShell } from "../components/PageShell";
 import { TemperatureValue } from "../components/TemperatureValue";
 
 export function generateStaticParams() {
@@ -42,9 +43,8 @@ export default async function LocationPage({ params }: PageProps) {
       className={`min-h-screen weather-background--detail ${background.className}`}
       style={background.style}
     >
-      <div className="max-w-xl mx-auto py-24 px-6">
-        <div className="flex flex-col gap-16 py-8 animate-fade-in
-            ">
+      <PageShell>
+        <div className="flex flex-col gap-16 animate-fade-in">
           <header className="flex flex-col gap-8">
             
             <section className="flex flex-col">
@@ -85,7 +85,7 @@ export default async function LocationPage({ params }: PageProps) {
           </section>
 
         </div>
-      </div>
-    </div>  
+      </PageShell>
+    </div>
   );
 }
