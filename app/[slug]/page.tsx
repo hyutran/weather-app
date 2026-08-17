@@ -45,29 +45,29 @@ export default async function LocationPage({ params }: PageProps) {
     >
       <PageShell>
         <div className="flex flex-col gap-16 animate-fade-in">
-          <header className="flex flex-col gap-8">
+          <header className="flex flex-col gap-10">
             
             <section className="flex flex-col">
-              <h2 className="text-xl font-semibold text-shadow-md">{location.name}</h2>
-              <p className="text-base text-muted-foreground text-shadow-sm">
+              <h2 className="text-lg font-semibold text-on-weather">{location.name}</h2>
+              <p className="text-base text-muted-foreground text-on-weather-sm">
                 {formatDate(todayForecast.date)}{" "}
                 {getCurrentTimeInTimezone(weather.current.timezone)}
               </p>
             </section>
 
             <section className="flex justify-between items-center">
-              <div className="flex flex-col gap-2">
-                <span className="font-minecart text-6xl font-light text-shadow-md">
+              <div className="flex flex-col gap-4">
+                <span className="font-minecart text-6xl font-light text-on-weather">
                   <TemperatureValue celsius={weather.current.temperature} />
                 </span>
-                <p className="text-base text-foreground/80 text-shadow-sm">{description}</p>
+                <p className="text-base text-muted-foreground text-on-weather-sm">{description}</p>
               </div>
               <Icon isNight={isNight} className="size-28" />
             </section>
           </header>
 
-          <section>
-            <h2 className="text-base font-semibold mb-4 text-shadow-sm">7-Day Forecast</h2>
+          <section className="flex flex-col gap-4">
+            <h3 className="text-base text-foreground font-semibold text-on-weather-sm">7-Day Forecast</h3>
             <ul className="flex flex-col">
               {weather.daily.map((day, index) => {
                 const DayIcon = getWeatherIcon(day.weatherCode);

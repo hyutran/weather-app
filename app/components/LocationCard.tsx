@@ -41,13 +41,13 @@ export function LocationCard({
       >
         <div className="flex justify-between items-center gap-1">
           <div>
-            <h2 className="text-base font-semibold text-foreground text-shadow-md">{name}</h2>
-            <p className="text-sm text-foreground/70 text-shadow-sm">
+            <h2 className="text-base font-semibold text-foreground text-on-weather">{name}</h2>
+            <p className="text-sm text-muted-foreground text-on-weather-sm">
               {getCurrentTimeInTimezone(timezone)} - {description}
             </p>
           </div>
           <div className="flex gap-6 items-center">
-            <span className="font-minecart text-4xl font-light text-foreground text-shadow-md">
+            <span className="font-minecart text-4xl font-light text-foreground text-on-weather">
               <TemperatureValue celsius={temperature} />
             </span>
             <Icon
@@ -58,11 +58,14 @@ export function LocationCard({
         </div>
       </Link>
       {onRemove && (
+        // The white glyph and focus ring stay literal on purpose: this button
+        // sits on top of an arbitrary weather gradient, so it has to remain
+        // legible regardless of what is behind it or which theme is active.
         <button
           type="button"
           onClick={onRemove}
           aria-label={`Remove ${name}`}
-          className="absolute top-3 right-3 flex size-6 items-center justify-center rounded-full bg-black/30 text-white opacity-0 shadow-sm backdrop-blur-sm transition-opacity duration-200 hover:bg-black/50 group-hover/card:opacity-100 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-white/60"
+          className="absolute top-3 right-3 flex size-6 items-center justify-center rounded-full bg-foreground/10 text-white opacity-0 shadow-sm backdrop-blur-sm transition-opacity duration-200 hover:bg-foreground/30 group-hover/card:opacity-100 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-white/60"
         >
           <XIcon className="size-3.5" />
         </button>

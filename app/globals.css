@@ -216,6 +216,18 @@
   font-family: var(--font-minecart);
 }
 
+/* Text sitting on the weather canvas. Named as a role rather than applied ad
+   hoc, so the two tiers stay paired and legibility can be tuned in one place:
+   primary names and values take the heavier shadow, supporting text the
+   lighter one. */
+.text-on-weather {
+  @apply text-shadow-md;
+}
+
+.text-on-weather-sm {
+  @apply text-shadow-sm;
+}
+
 .location-card-sortable {
   cursor: grab;
   outline: none;
@@ -267,6 +279,23 @@
   mask-image: linear-gradient(to bottom, black 55%, transparent);
   content: "";
   pointer-events: none;
+}
+
+/* Floating overlay surface, shared by the dialog and the select popover — the
+   app's only two floating panels. They previously disagreed on all six of the
+   properties below; bundling them here is what stops them drifting apart again.
+   Shadow geometry follows Tailwind's xl step, but takes --weather-card-shadow
+   rather than the ladder's built-in 10% black, so every elevated surface in the
+   app casts the same colour. */
+.surface-overlay {
+  border: 1px solid var(--input);
+  border-radius: var(--radius-2xl);
+  background-color: color-mix(in oklch, var(--popover) 80%, transparent);
+  box-shadow:
+    0 20px 25px -5px var(--weather-card-shadow),
+    0 8px 10px -6px var(--weather-card-shadow),
+    inset 0 1px 0 var(--weather-card-inset-highlight);
+  backdrop-filter: blur(24px);
 }
 
 .weather-background {

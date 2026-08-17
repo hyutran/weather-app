@@ -1,3 +1,9 @@
+/* The app ships dark-only: <html> carries a hardcoded `dark` class, so the
+   :root palette below is never the active theme. It is retained rather than
+   deleted because removing the `dark` class would break 37 `dark:` variants
+   across the shadcn primitives in components/ui/. Treat :root as the light
+   values a future theme toggle would switch to, not as dead code. */
+
 :root {
   /* Semantic colors */
   --background: oklch(1 0 0);

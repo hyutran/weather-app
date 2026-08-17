@@ -47,7 +47,7 @@ export default function RootLayout({
             <WeatherIconDefs />
             <header className="header-scrim pointer-events-none fixed top-0 left-0 z-10 h-(--header-height) w-full">
               <div className="pointer-events-auto relative mx-auto flex h-full max-w-xl items-center justify-between gap-4 px-6">
-                <h1 className="text-base font-semibold text-foreground/80 hover:text-foreground text-shadow-sm">
+                <h1 className="text-base font-semibold text-muted-foreground hover:text-foreground text-on-weather-sm">
                   <Link href="/">Weather here and there</Link>
                 </h1>
                 <TemperatureToggle />

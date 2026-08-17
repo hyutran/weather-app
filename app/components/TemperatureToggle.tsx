@@ -22,7 +22,7 @@ export function TemperatureToggle() {
     >
       <SelectTrigger
         aria-label="Temperature unit"
-        className="h-9 min-h-10 min-w-10 rounded-full border-white/15 bg-white/10 px-4 text-xs font-semibold text-white shadow-sm inset-shadow-xs inset-shadow-white/20 backdrop-blur-sm hover:bg-white/15 focus-visible:border-white/30 focus-visible:ring-white/20 dark:bg-card/40 dark:hover:bg-white/15 [&_svg]:text-white/50"
+        className="h-9 min-h-10 min-w-10 rounded-full bg-foreground/10 px-4 text-sm font-medium text-foreground text-on-weather-sm shadow-sm inset-shadow-xs inset-shadow-(color:--weather-card-inset-highlight) backdrop-blur-sm hover:bg-foreground/15 focus-visible:border-foreground/30 focus-visible:ring-foreground/20 [&_svg]:text-muted-foreground"
       >
         <SelectValue>
           {(value) => (value === "fahrenheit" ? "°F" : "°C")}
@@ -32,17 +32,17 @@ export function TemperatureToggle() {
         align="end"
         alignItemWithTrigger={false}
         sideOffset={8}
-        className="min-w-36 rounded-2xl border border-white/15 bg-background/80 p-1.5 text-white shadow-xl shadow-black/30 inset-shadow-xs inset-shadow-white/10 backdrop-blur-xl ring-0"
+        className="surface-overlay min-w-40 p-1.5 text-popover-foreground"
       >
         <SelectItem
           value="celsius"
-          className="rounded-xl px-2.5 py-2 text-xs font-medium text-white/70 data-highlighted:bg-white/10 data-highlighted:text-white data-selected:bg-white/15 data-selected:text-white"
+          className="rounded-lg px-2.5 py-2 text-sm font-medium text-muted-foreground data-highlighted:bg-foreground/10 data-highlighted:text-popover-foreground data-selected:bg-foreground/15 data-selected:text-popover-foreground"
         >
           Celsius (°C)
         </SelectItem>
         <SelectItem
           value="fahrenheit"
-          className="rounded-xl px-2.5 py-2 text-xs font-medium text-white/70 data-highlighted:bg-white/10 data-highlighted:text-white data-selected:bg-white/15 data-selected:text-white"
+          className="rounded-lg px-2.5 py-2 text-sm font-medium text-muted-foreground data-highlighted:bg-foreground/10 data-highlighted:text-popover-foreground data-selected:bg-foreground/15 data-selected:text-popover-foreground"
         >
           Fahrenheit (°F)
         </SelectItem>
