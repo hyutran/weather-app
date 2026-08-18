@@ -3,7 +3,7 @@ import { XIcon } from "lucide-react";
 import { getCurrentTimeInTimezone } from "../lib/dateTime";
 import { WeatherIcon } from "../lib/types";
 import { getWeatherSurfaceProps } from "../lib/weatherBackgrounds";
-import { TemperatureValue } from "./TemperatureValue";
+import { TemperatureReadout } from "./TemperatureReadout";
 import { weatherCardSurface } from "./weatherCardSurface";
 
 interface LocationCardProps {
@@ -49,9 +49,7 @@ export function LocationCard({
             </p>
           </div>
           <div className="flex gap-6 items-center">
-            <span className="font-minecart text-4xl font-light text-foreground text-on-weather">
-              <TemperatureValue celsius={temperature} />
-            </span>
+            <TemperatureReadout celsius={temperature} size="card" />
             <Icon
               className="size-12 [--animation-duration:0] group-hover/card:[--animation-duration:4s]"
               isNight={isNight}

@@ -7,7 +7,7 @@ import { getWeatherSurfaceProps } from "../lib/weatherBackgrounds";
 import { getCurrentTimeInTimezone, formatDate, getDayName, isNightTime } from "../lib/dateTime";
 import { DaysListItem } from "../components/DaysListItem";
 import { PageShell } from "../components/PageShell";
-import { TemperatureValue } from "../components/TemperatureValue";
+import { TemperatureReadout } from "../components/TemperatureReadout";
 
 export function generateStaticParams() {
   return locations.map((location) => ({
@@ -58,9 +58,10 @@ export default async function LocationPage({ params }: PageProps) {
 
             <section className="flex justify-between items-center">
               <div className="flex flex-col gap-4">
-                <span className="font-minecart text-6xl font-light text-on-weather">
-                  <TemperatureValue celsius={weather.current.temperature} />
-                </span>
+                <TemperatureReadout
+                  celsius={weather.current.temperature}
+                  size="hero"
+                />
                 <p className="text-base text-muted-foreground text-on-weather-sm">{description}</p>
               </div>
               <Icon isNight={isNight} className="size-28" />
