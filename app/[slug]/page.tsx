@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { locations, getLocationBySlug } from "@/data/locations";
+import { getLocationBySlug } from "@/data/locations";
 import { getWeather } from "../actions/actions";
 import { getWeatherIcon } from "../lib/weatherIcon";
 import { getWeatherDescription } from "../lib/weatherDescription";
@@ -10,10 +10,12 @@ import { LocationHeading } from "../components/LocationHeading";
 import { PageShell } from "../components/PageShell";
 import { TemperatureReadout } from "../components/TemperatureReadout";
 
+// Prerender nothing at build time: rendering all ~48 locations up front fires a
+// burst of requests at Open-Meteo, which rate-limits (429) and fails the build.
+// Each page is instead rendered on first visit and cached by the fetch's
+// 5-minute revalidate — the same freshness, without the build-time burst.
 export function generateStaticParams() {
-  return locations.map((location) => ({
-    slug: location.slug,
-  }));
+  return [];
 }
 
 interface PageProps {
