@@ -6,6 +6,7 @@ import { getWeatherDescription } from "../lib/weatherDescription";
 import { getWeatherSurfaceProps } from "../lib/weatherBackgrounds";
 import { getCurrentTimeInTimezone, formatDate, getDayName, isNightTime } from "../lib/dateTime";
 import { DaysListItem } from "../components/DaysListItem";
+import { LocationHeading } from "../components/LocationHeading";
 import { PageShell } from "../components/PageShell";
 import { TemperatureReadout } from "../components/TemperatureReadout";
 
@@ -48,13 +49,11 @@ export default async function LocationPage({ params }: PageProps) {
       <PageShell>
         <div className="flex flex-col gap-16 animate-fade-in">
           <header className="flex flex-col gap-10">
-            <section className="flex flex-col">
-              <h2 className="text-lg font-semibold text-on-weather">{location.name}</h2>
-              <p className="text-base text-muted-foreground text-on-weather-sm">
-                {formatDate(todayForecast.date)}{" "}
-                {getCurrentTimeInTimezone(weather.current.timezone)}
-              </p>
-            </section>
+            <LocationHeading
+              name={location.name}
+              meta={`${formatDate(todayForecast.date)} ${getCurrentTimeInTimezone(weather.current.timezone)}`}
+              size="hero"
+            />
 
             <section className="flex justify-between items-center">
               <div className="flex flex-col gap-4">

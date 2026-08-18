@@ -3,6 +3,7 @@ import { XIcon } from "lucide-react";
 import { getCurrentTimeInTimezone } from "../lib/dateTime";
 import { WeatherIcon } from "../lib/types";
 import { getWeatherSurfaceProps } from "../lib/weatherBackgrounds";
+import { LocationHeading } from "./LocationHeading";
 import { TemperatureReadout } from "./TemperatureReadout";
 import { weatherCardSurface } from "./weatherCardSurface";
 
@@ -42,12 +43,10 @@ export function LocationCard({
         )}
       >
         <div className="flex justify-between items-center gap-1">
-          <div>
-            <h2 className="text-base font-semibold text-foreground text-on-weather">{name}</h2>
-            <p className="text-sm text-muted-foreground text-on-weather-sm">
-              {getCurrentTimeInTimezone(timezone)} - {description}
-            </p>
-          </div>
+          <LocationHeading
+            name={name}
+            meta={`${getCurrentTimeInTimezone(timezone)} - ${description}`}
+          />
           <div className="flex gap-6 items-center">
             <TemperatureReadout celsius={temperature} size="card" />
             <Icon
