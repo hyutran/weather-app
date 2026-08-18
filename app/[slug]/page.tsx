@@ -46,7 +46,6 @@ export default async function LocationPage({ params }: PageProps) {
       <PageShell>
         <div className="flex flex-col gap-16 animate-fade-in">
           <header className="flex flex-col gap-10">
-            
             <section className="flex flex-col">
               <h2 className="text-lg font-semibold text-on-weather">{location.name}</h2>
               <p className="text-base text-muted-foreground text-on-weather-sm">
@@ -72,7 +71,7 @@ export default async function LocationPage({ params }: PageProps) {
               {weather.daily.map((day, index) => {
                 const DayIcon = getWeatherIcon(day.weatherCode);
                 return (
-                  <DaysListItem 
+                  <DaysListItem
                     key={day.date}
                     day={getDayName(day.date, index)}
                     maxTemp={day.maxTemp}

@@ -7,7 +7,9 @@ each todo below cites the findings it closes.
 Finding **#7** (Minecart typeface omitted from forecast rows) is intentional and
 excluded from this plan.
 
-**Status: phases 1–3 complete (todos 1–12).** Phase 4 is next.
+**Status: complete.** All 29 todos across 8 phases are done. Build passes (50/50
+pages), and both pages were visually verified. Two pre-existing lint errors
+remain, out of scope — see Phase 8.
 
 > **Revision note.** This plan was revised after auditing
 > [`tokens.css`](../app/styles/tokens.css) against the shadcn preset it derives
@@ -22,23 +24,23 @@ Three ways to express a design decision, and the test for choosing between them:
 
 | Form | Use when | Example |
 | --- | --- | --- |
-| **Token** (`tokens.css`) | The value is consumed inside a CSS recipe, or referenced by another token — places a Tailwind utility cannot reach | `--weather-card-inset-highlight`, a color slot inside a multi-layer `box-shadow` |
+| **Token** (`tokens.css`) | The value is consumed inside a CSS recipe, or referenced by another token — places a Tailwind utility cannot reach | `--weather-card-inset-highlight`, a colour slot inside a multi-layer `box-shadow` |
 | **Utility** (Tailwind) | The value is applied at a call site and the existing theme already expresses it | `bg-popover/80`, `shadow-sm`, `border-input` |
-| **Material class** (`globals.css`) | Several properties must travel together — fill *and* blur *and* border *and* shadow — or they will drift apart | `.weather-background--card`, `.header-scrim`, the planned `.surface-overlay` |
+| **Material class** (`globals.css`) | Several properties must travel together — fill *and* blur *and* border *and* shadow — or they will drift apart | `.weather-background--card`, `.header-scrim`, `.surface-overlay` |
 
 A value that a Tailwind utility already expresses does **not** earn a token.
 Adding one creates a second name for one thing, which is the problem findings
 #10, #12, and #13 are about.
 
 **Naming note.** `--weather-card-inset-highlight` and `--weather-card-shadow`
-keep their current names even though Phase 6 widens their scope beyond weather
-cards (the dialog and select popover consume them too). Renaming was considered
+keep their current names even though Phase 6 widened their scope beyond weather
+cards — the dialog and select popover consume them too. Renaming was considered
 and declined; expect to see `weather-card` tokens on non-card surfaces.
 
 **Cascade note.** Hand-written rules in `globals.css` are *unlayered*, while
 Tailwind utilities compile into the `utilities` layer. Unlayered styles win, so
 a material class always supersedes a competing utility regardless of source
-order. This is load-bearing for the card surface — see todo 9.
+order. Load-bearing for todo 9 — and it cuts both ways, see todo 23.
 
 ## Reuse map
 
@@ -49,13 +51,13 @@ What the first draft proposed, and what already covered it:
 | `--text-secondary` | **`--muted-foreground`** already is the secondary-text token — shadcn uses it for descriptions, labels, and placeholders on base surfaces, not for text on `--muted` fills. Only its dark value changed (60% → 70%). |
 | `--text-primary` | **`--foreground`**. A pure alias adds nothing. |
 | `--border-subtle` | **`--border`** (separators) and **`--input`** (interactive edges) are an existing two-tier system, already used correctly by the shadcn primitives. |
-| `--border-highlight` | **`--weather-card-inset-highlight`** already performs the edge-lighting job at [`globals.css`](../app/globals.css). |
+| `--border-highlight` | **`--weather-card-inset-highlight`** already performs the edge-lighting job. |
 | `--inset-highlight` | Same token as above. |
 | `--surface-raised` | **`bg-foreground/10`**, applied at the three tile call sites. |
 | `--surface-overlay` | **`bg-popover/80`** inside the Phase 6 material class. A token would orphan the `--popover` / `--popover-foreground` pair. |
-| `--surface-scrim` | **`bg-black/30`** — one call site, theme-independent by design. |
-| `--elevation-card` | **`shadow-sm`**. The card's hand-written shadow is byte-identical in geometry to Tailwind's `--shadow-sm`; only the color differs. |
-| `--elevation-overlay` | **`shadow-xl`**, which the select popover already uses. |
+| `--surface-scrim` | **`bg-black/30`** — theme-independent by design. |
+| `--elevation-card` | **`shadow-sm`**. The card's hand-written shadow is byte-identical in geometry to Tailwind's `--shadow-sm`; only the colour differs. |
+| `--elevation-overlay` | **`shadow-xl`** geometry — but see todo 23, the ladder's built-in colour was wrong. |
 | `--header-height` | The one genuinely new token. |
 
 ## The text ladder
@@ -85,30 +87,23 @@ What they share is density, which is what makes them read as one product:
 | --- | --- | --- | --- | --- |
 | `compact` | 1rem / 16px | 3rem / 48px | Dialog header, popover, toolbar | already correct (`p-4` on `DialogContent`) |
 | `default` | 1.5rem / 24px | 5rem / 80px | App header bar | ✅ done (was 136px) |
-| `spacious` | 2rem / 32px | 6rem / 96px | Detail-page hero | already correct (`gap-8`) |
+| `spacious` | 2rem / 32px | 6rem / 96px | Detail-page hero | already correct |
 
 Page content offset is a separate decision owned by `PageShell` (`py-24`,
 96px), deliberately not tied to `--header-height` so the two can move
 independently.
 
-## Sequencing
+## Decisions
 
-Phases 1 → 3 were load-bearing and ran in order. Phases 4, 6, and 7 are
-independent of one another. Phase 5 is blocked on the theme decision in todo 18.
-
-## Open decisions
-
-| # | Decision | Recommendation |
-| --- | --- | --- |
-| Todo 18 | Light palette: delete it and document dark-only, or wire a real theme toggle? | Delete. Adding a light theme is a feature, not a consistency fix, and the weather gradients are built for dark. |
-
-Settled during implementation:
+All settled. Recorded because several reversed the plan's original recommendation.
 
 | # | Decision | Outcome |
 | --- | --- | --- |
-| Todo 1 | Shadow color: 25%, or keep the card's current 24%? | **Kept 24%.** The card is the reference element — its shadow is already tuned, and later phases converge the drifting elements (30%, 10%) onto it. Moving the correct one for a round number is the wrong direction, and the 1% is imperceptible. |
-| Todo 4 | Delete the dead `--chart-*` / `--sidebar-*` blocks now, or defer to Phase 7? | **Deleted in Phase 1**, along with their `@theme inline` mappings. |
-| Todo 5 | Header scrim: tinted fill, or fully transparent? | **Tinted, via a material class.** The recommended `bg-app-background/80` was not viable — see todo 5. |
+| Todo 1 | Shadow colour: 25%, or keep the card's 24%? | **Kept 24%.** The card is the reference element; later phases converged the drifting elements (30%, 10%) onto it. Moving the correct one for a round number is backwards, and 1% is imperceptible. |
+| Todo 4 | Delete the dead `--chart-*` / `--sidebar-*` blocks now, or defer? | **Deleted in Phase 1**, with their `@theme inline` mappings. |
+| Todo 5 | Header scrim: tinted fill, or transparent? | **Tinted, via a material class.** The recommended `bg-app-background/80` was not viable — see todo 5. |
+| Todo 15 | Promote the location name to `h1`? | **No** — it would produce two `h1`s per page. See todo 15. |
+| Todo 18 | Light palette: delete, or wire a theme toggle? | **Neither — document and retain.** Recommendation reversed on evidence; see todo 18. |
 
 ---
 
@@ -119,21 +114,19 @@ All work in [`app/styles/tokens.css`](../app/styles/tokens.css).
 - [x] **1. Retune `--muted-foreground`** — `.dark` value set to white/70, up from
   the preset's 60%. The app had independently converged on 70–80% at four of five
   secondary-text sites, which said 60% was too dim over the weather gradients.
-  Also corrected [`page.tsx`](../app/[slug]/page.tsx), the only site already
-  using the token and until now the dimmest text in the app. *(#10)*
+  *(#10)*
 
 - [x] **2. Add `--header-height`** — the app header bar only, not the page
   offset. Consumed as `h-(--header-height)`, the same shorthand used at
   [`select.tsx:87`](../components/ui/select.tsx#L87); Tailwind 4.3's `--spacing`
-  is a single base multiplier, so no `@theme` mapping was needed. **Set to
-  `5rem`** during implementation. *(#3)*
+  is a single base multiplier, so no `@theme` mapping was needed. Set to `5rem`.
+  *(#3)*
 
 - [x] **3. Delete the dead weather-card tokens** — `--weather-card-border-size`
   and `--weather-card-border-highlight`. Neither was referenced. *(#14)*
 
 - [x] **4. Delete the dead palette blocks** — `--chart-1`–`5` and all eight
-  `--sidebar-*`, in both themes, plus their `@theme inline` mappings. Zero
-  references; this app has no charts and no sidebar.
+  `--sidebar-*`, in both themes, plus their `@theme inline` mappings.
 
 > No other `globals.css` changes were needed: `--color-muted-foreground` was
 > already mapped, the shadow ladder is built into Tailwind, and `--border` /
@@ -151,216 +144,241 @@ All work in [`app/styles/tokens.css`](../app/styles/tokens.css).
   > **Deviation.** The recommended `bg-app-background/80 backdrop-blur-md` was
   > not viable: `bg-app-background` maps to `--background-image-app-background`,
   > a radial-gradient, and alpha modifiers only apply to background-*color*
-  > utilities. A flat `bg-background/80` would have been wrong too — `--background`
-  > is near-black while the canvas gradient is lighter blue at the top, painting a
-  > visible dark band exactly where the header sits. Replaced with a
+  > utilities. A flat `bg-background/80` would have been worse — `--background`
+  > is near-black while the canvas gradient is lighter blue at the top, painting
+  > a visible dark band exactly where the header sits. Replaced with a
   > `.header-scrim` material class that tints with `--app-background-start` (the
-  > actual canvas color at that position, so it blends) and masks both tint and
+  > actual canvas colour at that position, so it blends) and masks both tint and
   > blur to nothing at the bottom edge. It lives on a pseudo-element because a
   > mask on the header itself would fade the title and toggle too. Lightning CSS
   > adds `-webkit-` prefixes and a `color-mix` fallback automatically.
 
-- [x] **6. Create `PageShell`** — [`app/components/PageShell.tsx`](../app/components/PageShell.tsx)
-  `mx-auto max-w-xl px-6 py-24`. Header height and page offset are now separate
-  concerns. *(#2)*
+- [x] **6. Create `PageShell`** — [`PageShell.tsx`](../app/components/PageShell.tsx)
+  `mx-auto max-w-xl px-6 py-24`. *(#2)*
 
 - [x] **7. Adopt it on the home page** — [`LocationList.tsx`](../app/components/LocationList.tsx) *(#2)*
 
 - [x] **8. Adopt it on the detail page** — [`page.tsx`](../app/[slug]/page.tsx)
-  Container swapped and the nested `py-8` deleted; the shell now owns all page
-  padding. Incidentally fixed the split className originally logged under
-  todo 26. *(#2)*
+  Container swapped and the nested `py-8` deleted. Incidentally fixed the split
+  className originally logged under todo 26. *(#2)*
 
 ## Phase 3 — Unified card surface ✅
 
-- [x] **9. Create the shared surface recipe** — [`app/components/weatherCardSurface.ts`](../app/components/weatherCardSurface.ts)
+- [x] **9. Create the shared surface recipe** — [`weatherCardSurface.ts`](../app/components/weatherCardSurface.ts)
   `min-h-28 rounded-4xl px-6 py-8 shadow-sm shadow-(color:--weather-card-shadow) sm:px-7 xl:px-8`
 
   > **Deviation.** Written as a plain exported string rather than cva. cva exists
-  > to generate variants and there are none here; a plain constant is the same
-  > class constant with less ceremony. A class constant rather than a wrapper
-  > component because the three consumers have three different root elements
-  > (`Link`, `div`, `DialogTrigger`), so a wrapper would need `asChild` plumbing
-  > for no gain.
+  > to generate variants and there are none here. A class constant rather than a
+  > wrapper component because the three consumers have three different root
+  > elements (`Link`, `div`, `DialogTrigger`).
   >
   > **Known overlap, verified.** `.weather-background--card` sets `box-shadow` in
-  > CSS, which replaces rather than merges with the recipe's `shadow-sm`. Because
-  > it is unlayered and `shadow-sm` compiles into the `utilities` layer, the card's
-  > declaration wins — keeping its directional insets (`inset -1px 2px 2px`), which
-  > the ladder cannot express. Skeleton and Add tile take the utility. Same
-  > rendering, one shadow color, ladder geometry throughout.
+  > CSS, replacing rather than merging with the recipe's `shadow-sm`. Being
+  > unlayered, it wins over the `utilities` layer — keeping its directional
+  > insets, which the ladder cannot express. Confirmed by inspecting the compiled
+  > CSS.
   >
-  > Note the `shadow-(color:--…)` form: the unhinted `shadow-(--…)` would set the
-  > shadow *value* rather than its color, silently producing an invalid shadow.
+  > Note the `shadow-(color:--…)` form: the unhinted `shadow-(--…)` sets the
+  > shadow *value* rather than its colour, silently producing an invalid shadow.
 
-- [x] **10. Adopt in LocationCard** — [`LocationCard.tsx`](../app/components/LocationCard.tsx)
-  Geometry was already at the target values, so nothing moved; `min-h-28` equals
-  its natural height. Trailing space cleared. *(#1, #17)*
+- [x] **10. Adopt in LocationCard** — geometry was already at target, so nothing
+  moved. Trailing space cleared. *(#1, #17)*
 
-- [x] **11. Adopt in LocationCardSkeleton** — [`LocationCardSkeleton.tsx`](../app/components/LocationCardSkeleton.tsx)
-  Padding grew 20/24px → 24/32px to match the real card, **killing the load-time
-  layout shift**. Dead `shadow-md/80` dropped (it was overridden by the
-  `shadow-black/30` that followed it); `bg-white/10` → `bg-foreground/10`.
-  *(#1, #12, #18)*
+- [x] **11. Adopt in LocationCardSkeleton** — padding grew 20/24px → 24/32px,
+  **killing the load-time layout shift**. Dead `shadow-md/80` dropped;
+  `bg-white/10` → `bg-foreground/10`. *(#1, #12, #18)*
 
-- [x] **12. Adopt in the Add tile** — [`AddLocationDialog.tsx`](../app/components/AddLocationDialog.tsx)
-  Removed the one-off `min-h-26` and the `shadow-lg shadow-black/10` that made it
-  float above its siblings. `bg-card/40` → `bg-foreground/10`,
+- [x] **12. Adopt in the Add tile** — removed the one-off `min-h-26` and the
+  `shadow-lg shadow-black/10`. `bg-card/40` → `bg-foreground/10`,
   `outline-white/20` → `outline-input`, `hover:outline-white/40` →
   `hover:outline-foreground/40`.
 
-  > As predicted, this is the one element that changed character: its fill
-  > flipped from *dark* translucent to *light* translucent to match the skeleton
-  > beside it. Correct outcome for #12. *(#1, #12, #13, #17)*
+  > As predicted, its fill flipped from *dark* translucent to *light* to match
+  > the skeleton beside it — the one element that changed character. *(#1, #12, #13, #17)*
 
-## Phase 4 — Typography roles
+## Phase 4 — Typography roles ✅
 
-- [ ] **13. Define the two text-on-weather utilities** — [`app/globals.css`](../app/globals.css)
-  `.text-on-weather` (md shadow) and `.text-on-weather-sm`, then apply to every
-  heading, value, and meta line over a weather surface — including the two that
-  currently lack it, the Add label and the toggle. *(#9)*
+- [x] **13. Define the two text-on-weather utilities** — [`globals.css`](../app/globals.css)
+  `.text-on-weather` / `.text-on-weather-sm`, applied at all 13 sites including
+  the toggle and Add label, which had no shadow at all.
 
-- [ ] **14. Collapse supporting-text treatments to `text-muted-foreground`** —
-  [`LocationCard.tsx`](../app/components/LocationCard.tsx) (`text-foreground/70`),
-  [`page.tsx`](../app/[slug]/page.tsx) (`text-foreground/80`),
-  [`DaysListItem.tsx`](../app/components/DaysListItem.tsx) (`text-foreground/80`).
-  The detail page's date line already uses the token and needs no edit. Sizes stay
-  per context — `text-sm` on cards, `text-base` on the detail page — only the
-  color converges. *(#5, #10)*
+  > Existing `sm`/`md` assignments were **preserved rather than re-graded**. The
+  > todo asked for coverage of the two elements that lacked shadows, not a
+  > re-tiering, so this is a rename plus two additions. *(#9)*
 
-- [ ] **15. Fix heading levels** — [`page.tsx`](../app/[slug]/page.tsx)
-  Promote the location name to `h1` (it is the page title) and demote the
-  forecast heading to `h3`, so one tag no longer carries two sizes. *(#6)*
+- [x] **14. Collapse supporting-text treatments to `text-muted-foreground`** —
+  card meta, detail description, forecast min temps. The detail date line already
+  used the token.
 
-- [ ] **16. Normalize control labels** — [`TemperatureToggle.tsx`](../app/components/TemperatureToggle.tsx), [`AddLocationDialog.tsx`](../app/components/AddLocationDialog.tsx)
-  One style: `text-sm font-medium`. *(#8)*
+  > Also converted the site title's `text-foreground/80` in `layout.tsx`, which
+  > the todo did not list. It was the fourth surviving value in the muted ladder;
+  > leaving it would have kept #10 partial. *(#5, #10)*
 
-- [ ] **17. Replace `mb-4` with gap** — [`page.tsx`](../app/[slug]/page.tsx)
-  Wrap the section in `flex flex-col gap-4`. *(#4)*
+- [x] **15. Fix heading levels** — forecast heading `h2`→`h3`, day names
+  `h3`→`h4`.
 
-## Phase 5 — Retire the hardcoded literals
+  > **Deviation — the location name was *not* promoted to `h1`.** Doing so would
+  > give every detail page two `h1`s, since the layout's site title already is
+  > one — an accessibility regression, not a fix. And demoting the forecast to
+  > `h3` as written would have put it level with the day names, so those moved to
+  > `h4`. Resulting outlines: home is `h1` → `h2` (cards); detail is `h1` → `h2`
+  > (location) → `h3` (forecast) → `h4` (days). Both nest correctly.
+  >
+  > This leaves `h2` at `text-xl` on detail and `text-base` on home cards, which
+  > is intentional: heading *level* tracks document structure, *size* tracks
+  > visual hierarchy. The defect in #6 was the broken outline. *(#6)*
 
-- [ ] **18. Settle the theme question first** — [`layout.tsx`](../app/layout.tsx), [`tokens.css`](../app/styles/tokens.css)
-  `<html>` is hardcoded `dark`, so the entire `:root` light palette is
-  unreachable — which is *why* the codebase drifted into `white/10` literals.
-  See the open decisions table.
+- [x] **16. Normalize control labels** — toggle trigger and both items,
+  `text-xs font-semibold` → `text-sm font-medium`. *(#8)*
 
-- [ ] **19. De-literalize TemperatureToggle** — [`TemperatureToggle.tsx`](../app/components/TemperatureToggle.tsx)
-  - **Delete `border-white/15` outright** — it is a no-op. The `SelectTrigger`
-    already carries `border-input` from [`select.tsx:45`](../components/ui/select.tsx#L45),
-    and `--input` *is* white/15 in dark. Removing it renders identically.
-  - `bg-white/10` → `bg-foreground/10`
-  - `text-white/70` → `text-muted-foreground`
-  - The popover's fill, blur, border, shadow, and sheen all move to the
-    `.surface-overlay` class in Phase 6. *(#11, #12, #13, #19)*
+- [x] **17. Replace `mb-4` with gap** — forecast section wrapped in
+  `flex flex-col gap-4`. *(#4)*
 
-- [ ] **20. Document the remove-button scrim as an exception** — [`LocationCard.tsx`](../app/components/LocationCard.tsx)
-  `bg-black/30` stays. It is theme-independent by design (its job is darkening,
-  not theming) and has one call site, so a token would be ceremony. Add a
-  comment saying so, then close #11 against it. *(#11)*
+## Phase 5 — Retire the hardcoded literals ✅
 
-- [ ] **21. De-literalize the Add tile** — [`AddLocationDialog.tsx`](../app/components/AddLocationDialog.tsx)
-  `text-foreground/80` → `text-muted-foreground`. Fill and outline were handled
-  in todo 12. *(#11)*
+- [x] **18. Settle the theme question** — **documented, not deleted.**
 
-- [ ] **22. De-literalize the skeleton's inset sheen** — [`LocationCardSkeleton.tsx`](../app/components/LocationCardSkeleton.tsx)
-  `inset-shadow-white/20` → `inset-shadow-(color:--weather-card-inset-highlight)`,
-  matching the sheen source the card and the Phase 6 overlays use. Note the
-  `color:` hint, for the same reason as todo 9.
+  > **Recommendation reversed on evidence.** The plan advised deleting the light
+  > palette. Checking first: there are **37 `dark:` variants across 8 shadcn
+  > primitives**, and deleting the palette means dropping the `dark` class, which
+  > breaks every one. That is a refactor of vendored components, not a cleanup,
+  > and an unused palette costs nothing at runtime. A comment block at the top of
+  > `tokens.css` now explains why `:root` is retained, so nobody deletes it as
+  > dead code later.
 
-  > **Added after Phase 3.** This literal had no owner in the original plan —
-  > #19's coverage assigned only the toggle and the two overlays, leaving the
-  > skeleton's inset shadow as the last unclaimed `white/x` value in the app.
-  > *(#11, #19)*
+- [x] **19. De-literalize TemperatureToggle** — `border-white/15` deleted
+  outright (a no-op: the `SelectTrigger` already carries `border-input`, and
+  `--input` *is* white/15 in dark). `bg-white/10` → `bg-foreground/10`,
+  `text-white/70` → `text-muted-foreground`.
 
-## Phase 6 — Overlay material and radius tiers
+  > **Latent bug found.** The trigger carried both `bg-white/10` and
+  > `dark:bg-card/40` — and since `<html>` is always `dark`, the dark rule always
+  > won. Its real fill was `card/40`, never the `white/10` the class list
+  > implied. Removing the stale `dark:` overrides puts it on `bg-foreground/10`,
+  > matching the skeleton and Add tile. *(#11, #12, #13, #19)*
 
-Target radius tiers: cards `4xl` (26px), overlays `2xl` (18px), controls `lg` (10px).
+- [x] **20. Document the remove-button scrim as an exception** — comment added at
+  [`LocationCard.tsx`](../app/components/LocationCard.tsx). The fill was later
+  tokenised to `bg-foreground/10`; only the white glyph and focus ring remain
+  literal, and the comment was corrected to say so. *(#11)*
 
-- [ ] **23. Create the `.surface-overlay` material class** — [`app/globals.css`](../app/globals.css)
-  Sibling to the existing `.weather-background--card` and `.header-scrim`
-  recipes, bundling the five properties that must travel together:
+- [x] **21. De-literalize the Add tile** — `text-foreground/80` →
+  `text-muted-foreground`. *(#11)*
 
-  ```css
-  .surface-overlay {
-    background-color: color-mix(in oklch, var(--popover) 80%, transparent);
-    backdrop-filter: blur(24px);
-    border: 1px solid var(--input);
-    border-radius: var(--radius-2xl);
-    box-shadow: var(--shadow-xl), inset 0 1px 0 var(--weather-card-inset-highlight);
-  }
-  ```
+- [x] **22. De-literalize the skeleton's inset sheen** —
+  `inset-shadow-white/20` → `inset-shadow-(color:--weather-card-inset-highlight)`.
+  Also converted the three shimmer bars, `bg-white/20` → `bg-foreground/20`.
+  *(#11, #19)*
 
-- [ ] **24. Adopt it on both overlays** — [`dialog.tsx`](../components/ui/dialog.tsx), [`TemperatureToggle.tsx`](../app/components/TemperatureToggle.tsx)
-  This is the real form of #15. The two overlays differ on **five** properties,
-  only one of which is radius:
+> **Went beyond the todos**, all under #11: the popover's `text-white` →
+> `text-popover-foreground`, the select items' state colours, and the chevron's
+> `text-white/50` → `text-muted-foreground`. Leaving those would have left the
+> phase half-done.
+>
+> **Open aesthetic question.** The sheen token is **40%**, where the surfaces
+> adopting it previously used 10–20%. Three surfaces now use it at geometries it
+> was not tuned for. Flagged for a human eye; lower it in one place if it reads
+> too hot.
 
-  | | Dialog | Select popover |
-  | --- | --- | --- |
-  | Fill | `bg-popover` (opaque) | `bg-background/80` |
-  | Blur | none | `backdrop-blur-xl` |
-  | Border | `ring-1 ring-foreground/10` | `border-white/15` |
-  | Shadow | none | `shadow-xl shadow-black/30` |
-  | Sheen | none | `inset-shadow-white/10` |
+## Phase 6 — Overlay material and radius tiers ✅
 
-  A shared class fixes all five; a radius change alone would have fixed one.
-  Also update the footer's `rounded-b-xl` to match. *(#12, #15, #19)*
+- [x] **23. Create the `.surface-overlay` material class** — [`globals.css`](../app/globals.css)
 
-- [ ] **25. Fix select item radius** — [`TemperatureToggle.tsx`](../app/components/TemperatureToggle.tsx)
-  `rounded-xl` → `rounded-lg`, restoring visible inset inside the 18px popover. *(#16)*
+  > **Deviation.** The plan's `box-shadow: var(--shadow-xl)` would have used
+  > Tailwind's built-in **10% black** — verified in the emitted CSS — which
+  > contradicts the 24% settled in todo 1 and would leave overlays casting a
+  > different colour than every card. The xl *geometry* is written explicitly
+  > with `--weather-card-shadow` instead.
+  >
+  > **Caveat.** Because the class is unlayered it beats utilities, so
+  > per-call-site overrides of fill, radius, border, or shadow will silently not
+  > apply on these two components. Same tradeoff as `.weather-background--card`,
+  > but now on a vendored primitive where it is less expected.
 
-## Phase 7 — Dead code and documentation
+- [x] **24. Adopt it on both overlays** — [`dialog.tsx`](../components/ui/dialog.tsx)
+  and [`TemperatureToggle.tsx`](../app/components/TemperatureToggle.tsx); footer
+  `rounded-b-xl` → `rounded-b-2xl`. This is the real form of #15 — the two
+  differed on fill, blur, border, radius, shadow, and sheen, only one of which
+  was radius.
 
-- [ ] **26. Strip remaining leftovers** — empty `style={{}}` in
-  [`layout.tsx`](../app/layout.tsx), and the stray blank line in the detail
-  page's header block. (The split className originally listed here was fixed in
-  todo 8.)
+  > The dialog changed substantially: it previously had no blur, no
+  > translucency, no shadow, and a `ring` instead of a border. Largest single
+  > visual change in the plan. *(#12, #15, #19)*
 
-- [ ] **27. Update the migration doc** — [`design-token-migration.md`](design-token-migration.md)
-  Record the token-vs-utility-vs-class rule from [Principles](#principles), the
-  cascade-layer note, the two-tier text ladder, and the `--border` / `--input`
-  distinction, so the maintenance rule at [`:55`](design-token-migration.md#L55)
-  stays accurate and the next contributor does not re-derive `white/15`.
+- [x] **25. Fix select item radius** — `rounded-xl` → `rounded-lg`. *(#16)*
 
-## Phase 8 — Verify
+## Phase 7 — Dead code and documentation ✅
 
-- [ ] **28.** `pnpm lint` and `pnpm build` both pass.
+- [x] **26. Strip remaining leftovers** — empty `style={{}}` and a stray blank
+  line in `layout.tsx`; the whitespace-only line in the detail page's header
+  block; trailing spaces at `<DaysListItem ` and in `DaysListItem`'s className.
+  Left alone: trailing whitespace in `icons/primitives/`, `lib/dateTime.ts` —
+  pre-existing, in files this plan never touched.
 
-  > Two lint errors are **pre-existing and out of scope**: `getWeatherIcon`
-  > returning a component during render in [`page.tsx`](../app/[slug]/page.tsx),
-  > and a `setState`-in-effect in
-  > [`WeatherContext.tsx`](../app/context/WeatherContext.tsx). Both are
-  > correctness issues rather than visual ones. Fix separately.
+- [x] **27. Update the migration doc** — [`design-token-migration.md`](design-token-migration.md)
 
-- [ ] **29.** Run dev and check both pages:
-  - card → skeleton swap holds still on load
-  - all three tiles share one height, one fill character, and one elevation
-  - first card is clickable at its top edge
-  - dialog and select popover read as the same material
+  > **Two of its tables had become factually wrong**: it recorded the chart and
+  > sidebar palettes as migrated to `tokens.css`, but Phase 1 deleted both. Fixed
+  > with a "Superseded" callout plus a *Subsequent changes* section. New
+  > sections: choosing where a value lives, material classes, cascade layers,
+  > colour roles, and a rewritten maintenance rule.
+
+## Phase 8 — Verify ✅
+
+- [x] **28. `pnpm build` passes** — compiles clean, TypeScript clean, 50/50
+  static pages generated.
+
+  > `pnpm lint` reports **2 errors, both pre-existing and out of scope**:
+  > `getWeatherIcon` returning a component during render in
+  > [`page.tsx`](../app/[slug]/page.tsx), and a `setState`-in-effect in
+  > [`WeatherContext.tsx`](../app/context/WeatherContext.tsx). Correctness issues
+  > rather than visual ones — fix separately.
+  >
+  > Intermittent `Weather API error: 429` during static generation is upstream
+  > rate limiting from repeated builds, not a code fault. It clears on its own.
+
+- [x] **29. Visual check** — dev server driven with headless Chrome; home and
+  detail pages screenshotted and inspected.
+
+  | Check | Result |
+  | --- | --- |
+  | Card → skeleton swap holds still | ✅ Tile positions pixel-identical between a 350ms and a 12s capture. Geometry is also provable: all three tiles carry `weatherCardSurface` and no other box-geometry class. |
+  | Three tiles share height, fill, elevation | ✅ All five tiles measure ~112px (`min-h-28`), including the Add tile, previously 104px. |
+  | First card clickable at its top edge | ✅ Bar occupies 0–80px, first card starts at 96px. No overlap remains. |
+  | Dialog and popover read as one material | ⚠️ Structurally guaranteed — both carry `.surface-overlay` with no competing utilities, verified in source and compiled CSS — but **not** confirmed on screen. Driving the two overlays open needs a browser automation driver, which is not installed and was not worth adding for this. |
 
 ---
 
 ## Finding coverage
 
-| Finding | Closed by | Status |
-| --- | --- | --- |
-| #1 Card padding / min-height mismatch | 9, 10, 11, 12 | ✅ |
-| #2 Two page-container expressions | 6, 7, 8 | ✅ |
-| #3 Header height vs content offset, invalid `bg-` | 2, 5 | ✅ |
-| #4 Margin/gap mixed for one rhythm | 17 | |
-| #5 Supporting text differs per page | 14 | |
-| #6 Heading levels vs visual weight | 15 | |
-| #8 Control label weight pairing | 16 | |
-| #9 `text-shadow` applied ad hoc | 13 | |
-| #10 Four muted-text ladders | 1, 14 | partial |
-| #11 Hardcoded `white/*`, `black/*` | 12, 18, 19, 20, 21, 22 | partial |
-| #12 Inconsistent surface fills | 11, 12, 19, 24 | partial |
-| #13 Border alpha 10/15/20/25/40 | 12, 19 | partial |
-| #14 Unused card tokens | 3 | ✅ |
-| #15 Overlay radii disagree *(widened to material)* | 23, 24 | |
-| #16 Select item radius override | 25 | |
-| #17 Three elevation systems on siblings | 9, 10, 12 | ✅ |
-| #18 Dead `shadow-md/80` | 11 | ✅ |
-| #19 Inset highlight varies | 19, 22, 24 | partial |
+All findings closed. #7 excluded — intentional.
 
-*#7 excluded — intentional.*
+| Finding | Closed by |
+| --- | --- |
+| #1 Card padding / min-height mismatch | 9, 10, 11, 12 |
+| #2 Two page-container expressions | 6, 7, 8 |
+| #3 Header height vs content offset, invalid `bg-` | 2, 5 |
+| #4 Margin/gap mixed for one rhythm | 17 |
+| #5 Supporting text differs per page | 14 |
+| #6 Heading levels vs visual weight | 15 |
+| #8 Control label weight pairing | 16 |
+| #9 `text-shadow` applied ad hoc | 13 |
+| #10 Four muted-text ladders | 1, 14 |
+| #11 Hardcoded `white/*`, `black/*` | 12, 18, 19, 20, 21, 22 |
+| #12 Inconsistent surface fills | 11, 12, 19, 24 |
+| #13 Border alpha 10/15/20/25/40 | 12, 19 |
+| #14 Unused card tokens | 3 |
+| #15 Overlay radii disagree *(widened to material)* | 23, 24 |
+| #16 Select item radius override | 25 |
+| #17 Three elevation systems on siblings | 9, 10, 12 |
+| #18 Dead `shadow-md/80` | 11 |
+| #19 Inset highlight varies | 19, 22, 24 |
+
+## Follow-ups
+
+Not part of this plan, surfaced by it:
+
+- The two pre-existing lint errors (todo 28).
+- The 40% sheen intensity on three surfaces (Phase 5).
+- `bg-black/10` on `DialogOverlay` — the modal backdrop. Same category as the
+  documented scrim exception; no todo covered it, left deliberately.

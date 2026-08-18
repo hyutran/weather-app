@@ -36,12 +36,7 @@ export default function RootLayout({
       lang="en"
       className={`dark ${inter.variable} ${minecart.variable}`}
     >
-      <body
-        className="antialiased bg-app-background text-foreground"
-
-        style={{
-        }}
-      >
+      <body className="antialiased bg-app-background text-foreground">
         <WeatherProvider>
           <TemperatureScaleProvider>
             <WeatherIconDefs />
