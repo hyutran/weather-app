@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { cn } from "@/lib/utils";
 
 interface WeatherPalette {
   base: string;
@@ -60,7 +61,7 @@ interface WeatherBackground {
   };
 }
 
-export function getWeatherBackground(
+function getWeatherBackground(
   code: number,
   isNight: boolean
 ): WeatherBackground {
@@ -73,5 +74,41 @@ export function getWeatherBackground(
       "--weather-glow": glow,
       "--weather-glow-bright": glowBright,
     },
+  };
+}
+
+// The two `.weather-background--*` recipes in globals.css. Both build on the
+// same `.weather-background` base and the same three palette custom properties;
+// they differ only in how far the gradient and glows are thrown.
+type WeatherSurfaceVariant = "card" | "detail";
+
+const WEATHER_SURFACE_VARIANT_CLASS: Record<WeatherSurfaceVariant, string> = {
+  card: "weather-background--card",
+  detail: "weather-background--detail",
+};
+
+// Every prop a weather-painted surface needs, in one object to spread.
+//
+// The palette travels as inline custom properties rather than classes, so the
+// className and the style are two halves of one decision — a call site that
+// spreads only the first gets the recipe with no colours in it, and nothing in
+// the type system objects. Returning them together is what removes that gap.
+// Consumers differ in root element (`Link`, `div`), so this is a props getter
+// rather than a wrapper component.
+export function getWeatherSurfaceProps(
+  code: number,
+  isNight: boolean | undefined,
+  variant: WeatherSurfaceVariant,
+  className?: string
+): WeatherBackground {
+  const background = getWeatherBackground(code, isNight ?? false);
+
+  return {
+    className: cn(
+      background.className,
+      WEATHER_SURFACE_VARIANT_CLASS[variant],
+      className
+    ),
+    style: background.style,
   };
 }

@@ -3,7 +3,7 @@ import { locations, getLocationBySlug } from "@/data/locations";
 import { getWeather } from "../actions/actions";
 import { getWeatherIcon } from "../lib/weatherIcon";
 import { getWeatherDescription } from "../lib/weatherDescription";
-import { getWeatherBackground } from "../lib/weatherBackgrounds";
+import { getWeatherSurfaceProps } from "../lib/weatherBackgrounds";
 import { getCurrentTimeInTimezone, formatDate, getDayName, isNightTime } from "../lib/dateTime";
 import { DaysListItem } from "../components/DaysListItem";
 import { PageShell } from "../components/PageShell";
@@ -36,12 +36,14 @@ export default async function LocationPage({ params }: PageProps) {
     weather.current.sunrise,
     weather.current.sunset
   );
-  const background = getWeatherBackground(weather.current.weatherCode, isNight);
-
   return (
     <div
-      className={`min-h-screen weather-background--detail ${background.className}`}
-      style={background.style}
+      {...getWeatherSurfaceProps(
+        weather.current.weatherCode,
+        isNight,
+        "detail",
+        "min-h-screen"
+      )}
     >
       <PageShell>
         <div className="flex flex-col gap-16 animate-fade-in">

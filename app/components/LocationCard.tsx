@@ -2,7 +2,7 @@ import Link from "next/link";
 import { XIcon } from "lucide-react";
 import { getCurrentTimeInTimezone } from "../lib/dateTime";
 import { WeatherIcon } from "../lib/types";
-import { getWeatherBackground } from "../lib/weatherBackgrounds";
+import { getWeatherSurfaceProps } from "../lib/weatherBackgrounds";
 import { TemperatureValue } from "./TemperatureValue";
 import { weatherCardSurface } from "./weatherCardSurface";
 
@@ -29,15 +29,17 @@ export function LocationCard({
   weatherCode,
   onRemove,
 }: LocationCardProps) {
-  const background = getWeatherBackground(weatherCode, isNight ?? false);
-
   return (
     <div className="group/card relative h-full">
       <Link
         href={`/${slug}`}
         draggable={false}
-        className={`${weatherCardSurface} weather-background--card block h-full ${background.className}`}
-        style={background.style}
+        {...getWeatherSurfaceProps(
+          weatherCode,
+          isNight,
+          "card",
+          `${weatherCardSurface} block h-full`
+        )}
       >
         <div className="flex justify-between items-center gap-1">
           <div>
