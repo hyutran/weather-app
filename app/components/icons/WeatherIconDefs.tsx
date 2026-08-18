@@ -32,6 +32,33 @@ export function WeatherIconDefs() {
           />
         </radialGradient>
 
+        {/* Amber glow — the Moon's counterpart to yellowGlow. Same stop
+            geometry as the Sun's so the two bodies pulse with the same falloff,
+            but warmer and dimmer: moonlight should read as reflected, not
+            emitted. */}
+        <radialGradient id="amberGlow" cx="50%" cy="50%" r="50%">
+          <stop
+            offset="0%"
+            style={{ stopColor: "var(--color-amber-100)", stopOpacity: 0.45 }}
+          />
+          <stop
+            offset="35%"
+            style={{ stopColor: "var(--color-amber-100)", stopOpacity: 0.3 }}
+          />
+          <stop
+            offset="60%"
+            style={{ stopColor: "var(--color-amber-200)", stopOpacity: 0.18 }}
+          />
+          <stop
+            offset="80%"
+            style={{ stopColor: "var(--color-amber-300)", stopOpacity: 0.1 }}
+          />
+          <stop
+            offset="100%"
+            style={{ stopColor: "var(--color-amber-300)", stopOpacity: 0 }}
+          />
+        </radialGradient>
+
         {/* Cloud gradient 3 - subtle warm-gray refinement */}
         <linearGradient id="cloudGradient3" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" style={{ stopColor: "var(--color-gray-50)" }} />
