@@ -1,10 +1,11 @@
 import { LocationHeading } from "./LocationHeading";
+import { raisedSurface } from "./raisedSurface";
 import { weatherCardSurface } from "./weatherCardSurface";
 
 export function LocationCardSkeleton({ name }: { name: string }) {
   return (
     <div
-      className={`${weatherCardSurface} h-full bg-foreground/10 inset-shadow-xs inset-shadow-(color:--weather-card-inset-highlight)`}
+      className={`${weatherCardSurface} ${raisedSurface} h-full`}
     >
       <div className="flex items-center justify-between">
         <LocationHeading

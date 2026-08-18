@@ -8,6 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useTemperatureScale } from "../context/TemperatureScaleContext";
+import { raisedSurface } from "./raisedSurface";
 
 // Dropdown for switching the app's temperature scale between Celsius and Fahrenheit.
 export function TemperatureToggle() {
@@ -22,7 +23,7 @@ export function TemperatureToggle() {
     >
       <SelectTrigger
         aria-label="Temperature unit"
-        className="h-9 min-h-10 min-w-10 rounded-full bg-foreground/10 px-4 text-sm font-medium text-foreground text-on-weather-sm shadow-sm inset-shadow-xs inset-shadow-(color:--weather-card-inset-highlight) backdrop-blur-sm hover:bg-foreground/15 focus-visible:border-foreground/30 focus-visible:ring-foreground/20 [&_svg]:text-muted-foreground"
+        className={`${raisedSurface} h-9 min-h-10 min-w-10 rounded-full px-4 text-sm font-medium text-foreground text-on-weather-sm shadow-sm backdrop-blur-sm hover:bg-foreground/15 focus-visible:border-foreground/30 focus-visible:ring-foreground/20 [&_svg]:text-muted-foreground`}
       >
         <SelectValue>
           {(value) => (value === "fahrenheit" ? "°F" : "°C")}
